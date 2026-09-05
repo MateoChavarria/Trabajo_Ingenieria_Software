@@ -1,8 +1,12 @@
 package com.orientadorvocacional.servicio;
 
 import com.orientadorvocacional.excepciones.CorreoYaRegistradoException;
+import com.orientadorvocacional.excepciones.CredencialesInvalidasException;
+import com.orientadorvocacional.excepciones.InicioSesionFallidoException;
 import com.orientadorvocacional.excepciones.RegistroFallidoException;
+import com.orientadorvocacional.modelo.SesionUsuario;
 import com.orientadorvocacional.modelo.Usuario;
+
 
 /**
  * Contrato para cualquier proveedor de autenticacion.
@@ -22,4 +26,14 @@ public interface IServicioAutenticacion {
      */
     String registrar(Usuario usuario)
             throws CorreoYaRegistradoException, RegistroFallidoException;
+    
+        /**
+     * Inicia sesión con un correo y contraseña ya existentes.
+     *
+     * @param correo     correo del usuario
+     * @param contrasena contraseña del usuario
+     * @return la sesión activa, con su token y fecha de expiración
+     */
+    SesionUsuario iniciarSesion(String correo, String contrasena)
+            throws CredencialesInvalidasException, InicioSesionFallidoException;
 }

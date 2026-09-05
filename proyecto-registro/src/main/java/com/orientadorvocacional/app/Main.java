@@ -2,15 +2,12 @@ package com.orientadorvocacional.app;
 
 import com.orientadorvocacional.config.ConfiguracionSupabase;
 import com.orientadorvocacional.repositorio.SupabaseRepositorioUsuario;
+import com.orientadorvocacional.servicio.CasoUsoIniciarSesion;
 import com.orientadorvocacional.servicio.CasoUsoRegistrarUsuario;
 import com.orientadorvocacional.servicio.SupabaseServicioAutenticacion;
 import com.orientadorvocacional.vista.VistaRegistro;
 import javax.swing.SwingUtilities;
 
-/**
- * Punto de entrada principal de la aplicación.
- * Lanza la interfaz gráfica del Swing.
- */
 public class Main {
 
     public static void main(String[] args) {
@@ -18,12 +15,17 @@ public class Main {
             try {
                 ConfiguracionSupabase configuracion = new ConfiguracionSupabase("application.properties");
 
+                SupabaseServicioAutenticacion servicioAutenticacion =
+                        new SupabaseServicioAutenticacion(configuracion);
+
                 CasoUsoRegistrarUsuario casoUsoRegistro = new CasoUsoRegistrarUsuario(
-                        new SupabaseServicioAutenticacion(configuracion),
+                        servicioAutenticacion,
                         new SupabaseRepositorioUsuario(configuracion)
                 );
 
-                VistaRegistro vista = new VistaRegistro(casoUsoRegistro);
+                CasoUsoIniciarSesion casoUsoLogin = new CasoUsoIniciarSesion(servicioAutenticacion);
+
+                VistaRegistro vista = new VistaRegistro(casoUsoRegistro, casoUsoLogin);
                 vista.setVisible(true);
 
             } catch (Exception e) {

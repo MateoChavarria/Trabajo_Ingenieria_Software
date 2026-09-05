@@ -7,6 +7,10 @@ import com.orientadorvocacional.config.ConfiguracionSupabase;
 import com.orientadorvocacional.excepciones.CorreoYaRegistradoException;
 import com.orientadorvocacional.excepciones.RegistroFallidoException;
 import com.orientadorvocacional.modelo.Usuario;
+import com.orientadorvocacional.excepciones.CredencialesInvalidasException;
+import com.orientadorvocacional.excepciones.InicioSesionFallidoException;
+import com.orientadorvocacional.modelo.SesionUsuario;
+
 
 import java.io.IOException;
 import java.net.URI;
@@ -61,6 +65,63 @@ public class SupabaseServicioAutenticacion implements IServicioAutenticacion {
         } catch (IOException | InterruptedException excepcion) {
             throw new RegistroFallidoException(
                     "No se pudo completar el registro por un problema de conexión.", excepcion);
+        }
+    }
+
+        @Override
+    public SesionUsuario iniciarSesion(String correo, String contrasena)
+            throws CredencialesInvalidasException, InicioSesionFallidoException {
+        try {
+            String cuerpoJson = mapeadorJson.createObjectNode()
+                    .put("email", correo)
+                    .put("password", contrasena)
+                    .toString();
+
+            HttpRequest peticion = HttpRequest.newBuilder()
+                    .uri(URI.create(configuracion.getUrlProyecto()
+                            + "/auth/v1/token?grant_type=password"))
+                    .header("apikey", configuracion.getClaveAnonPublica())
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(cuerpoJson))
+                    .build();
+
+            HttpResponse<String> respuesta =
+                    clienteHttp.send(peticion, HttpResponse.BodyHandlers.ofString());
+
+            return procesarRespuestaLogin(respuesta);
+
+        } catch (IOException | InterruptedException excepcion) {
+            throw new InicioSesionFallidoException(
+                    "No se pudo iniciar sesión por un problema de conexión.", excepcion);
+        }
+    }
+
+    private SesionUsuario procesarRespuestaLogin(HttpResponse<String> respuesta)
+            throws CredencialesInvalidasException, InicioSesionFallidoException {
+        try {
+            JsonNode raiz = mapeadorJson.readTree(respuesta.body());
+
+            boolean exito = respuesta.statusCode() == 200;
+
+            if (exito) {
+                String token = raiz.path("access_token").asText(null);
+                String idUsuario = raiz.path("user").path("id").asText(null);
+
+                if (token == null || idUsuario == null) {
+                    throw new InicioSesionFallidoException(
+                            "Supabase no devolvió un token de sesión válido.");
+                }
+                return new SesionUsuario(token, idUsuario);
+            }
+
+            // Mensaje genérico a propósito: nunca decimos si falló el
+            // correo o la contraseña, para no darle pistas a un atacante.
+            throw new CredencialesInvalidasException(
+                    "Correo o contraseña incorrectos.");
+
+        } catch (JsonProcessingException excepcion) {
+            throw new InicioSesionFallidoException(
+                    "La respuesta del servidor no se pudo interpretar.", excepcion);
         }
     }
 

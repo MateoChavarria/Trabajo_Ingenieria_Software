@@ -5,6 +5,7 @@ import com.orientadorvocacional.excepciones.CorreoInvalidoException;
 import com.orientadorvocacional.excepciones.CorreoYaRegistradoException;
 import com.orientadorvocacional.excepciones.RegistroFallidoException;
 import com.orientadorvocacional.servicio.CasoUsoRegistrarUsuario;
+import com.orientadorvocacional.servicio.CasoUsoIniciarSesion;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -21,9 +22,11 @@ public class VistaRegistro extends JFrame {
     private JLabel lblErrorServidor;
 
     private final CasoUsoRegistrarUsuario casoUsoRegistro;
+    private final CasoUsoIniciarSesion casoUsoLogin;
 
-    public VistaRegistro(CasoUsoRegistrarUsuario casoUsoRegistro) {
+        public VistaRegistro(CasoUsoRegistrarUsuario casoUsoRegistro, CasoUsoIniciarSesion casoUsoLogin) {
         this.casoUsoRegistro = casoUsoRegistro;
+        this.casoUsoLogin = casoUsoLogin;
 
         setTitle("Orientador Vocacional - Registro");
         setSize(420, 380);
@@ -142,7 +145,7 @@ public class VistaRegistro extends JFrame {
                 "Éxito", 
                 JOptionPane.INFORMATION_MESSAGE);
 
-            VistaLogin vistaLogin = new VistaLogin();
+            VistaLogin vistaLogin = new VistaLogin(casoUsoLogin);
             vistaLogin.setVisible(true);
             this.dispose();
 

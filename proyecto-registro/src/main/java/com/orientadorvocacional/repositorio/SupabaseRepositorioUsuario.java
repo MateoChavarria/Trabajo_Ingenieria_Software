@@ -45,7 +45,6 @@ public class SupabaseRepositorioUsuario implements IRepositorioUsuario {
             HttpRequest peticion = HttpRequest.newBuilder()
                     .uri(URI.create(configuracion.getUrlProyecto() + "/rest/v1/usuarios"))
                     .header("apikey", configuracion.getClaveAnonPublica())
-                    .header("Authorization", "Bearer " + configuracion.getClaveAnonPublica())
                     .header("Content-Type", "application/json")
                     .header("Prefer", "return=minimal")
                     .POST(HttpRequest.BodyPublishers.ofString(cuerpoJson))
@@ -75,7 +74,6 @@ public class SupabaseRepositorioUsuario implements IRepositorioUsuario {
                     .uri(URI.create(configuracion.getUrlProyecto()
                             + "/rest/v1/usuarios?correo=eq." + correoCodificado + "&select=id"))
                     .header("apikey", configuracion.getClaveAnonPublica())
-                    .header("Authorization", "Bearer " + configuracion.getClaveAnonPublica())
                     .GET()
                     .build();
 
