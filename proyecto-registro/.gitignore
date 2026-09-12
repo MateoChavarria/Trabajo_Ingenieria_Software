@@ -1,5 +1,0 @@
-target/
-*.class
-#src/main/resources/application.properties
-.idea/
-*.iml
