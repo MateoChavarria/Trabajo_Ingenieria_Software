@@ -12,6 +12,8 @@ import com.orientadorvocacional.excepciones.InicioSesionFallidoException;
 import com.orientadorvocacional.modelo.SesionUsuario;
 
 
+import org.springframework.stereotype.Service;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -23,10 +25,17 @@ import java.time.Duration;
  * Implementacion de IServicioAutenticacion que se conecta a la API de
  * autenticacion de Supabase (Supabase Auth).
  *
- * Responsabilidad unica de esta clase: registrar al usuario en el
- * sistema de autenticacion. NO se encarga de guardar el perfil en la
- * tabla "usuarios" (eso lo hace SupabaseRepositorioUsuario).
+ * Responsabilidad unica de esta clase: registrar e iniciar sesion de un
+ * usuario contra el sistema de autenticacion. NO se encarga de guardar
+ * el perfil en la tabla "usuarios" (eso lo hace JpaRepositorioUsuario,
+ * que persiste directo en PostgreSQL via JDBC/JPA).
+ *
+ * @Service le dice a Spring que cree UNA sola instancia de esta clase
+ * (un "bean") y la entregue automaticamente a quien la necesite en su
+ * constructor (por ejemplo, CasoUsoRegistrarUsuario), sin que nadie
+ * tenga que escribir "new SupabaseServicioAutenticacion(...)" a mano.
  */
+@Service
 public class SupabaseServicioAutenticacion implements IServicioAutenticacion {
 
     private final ConfiguracionSupabase configuracion;

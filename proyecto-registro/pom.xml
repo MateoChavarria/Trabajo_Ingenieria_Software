@@ -4,30 +4,57 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <!--
+        Usamos Spring Boot como "padre" del proyecto: esto nos da versiones
+        compatibles de todas las librerias sin tener que fijarlas una por
+        una, y agrega el plugin que empaqueta la app como un .jar ejecutable.
+    -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.3.4</version>
+        <relativePath/>
+    </parent>
+
     <groupId>com.orientadorvocacional</groupId>
     <artifactId>orientador-vocacional-upb</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>17</java.version>
     </properties>
 
     <dependencies>
-        <!-- Para convertir objetos Java <-> JSON al hablar con la API de Supabase -->
+        <!-- Servidor web embebido + soporte para controladores REST (@RestController) -->
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.17.1</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!--
-            El driver de PostgreSQL se agregará en un sprint posterior,
-            cuando trabajemos directo con tablas como carreras, semestres
-            y materias mediante JDBC. Para el registro de usuarios no se
-            necesita: usamos la API REST de Supabase (PostgREST).
-        -->
+        <!-- Spring Data JPA: nos da los repositorios (JpaRepository) sin
+             tener que escribir SQL a mano, y mapea nuestras clases @Entity
+             a las tablas de PostgreSQL. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <!-- Driver de PostgreSQL: es lo que permite a Spring conectarse
+             por JDBC a la base de datos de Supabase. -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 </project>

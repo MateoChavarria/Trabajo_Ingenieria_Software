@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro - Orientador Vocacional UPB</title>
+    <style>
+        body { font-family: sans-serif; max-width: 400px; margin: 60px auto; }
+        input { width: 100%; padding: 8px; margin: 6px 0; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; margin-top: 10px; }
+        .error { color: red; min-height: 20px; }
+    </style>
+</head>
+<body>
+    <h2>Crear cuenta</h2>
+
+    <form id="formRegistro">
+        <label for="correo">Correo electrónico</label>
+        <input type="email" id="correo" required>
+
+        <label for="contrasena">Contraseña</label>
+        <input type="password" id="contrasena" required>
+        <small>Mínimo 8 caracteres, 1 mayúscula y 1 número.</small>
+
+        <p class="error" id="mensajeError"></p>
+
+        <button type="submit">Registrarme</button>
+    </form>
+
+    <p>¿Ya tienes cuenta? <a href="login.html">Inicia sesión</a></p>
+
+    <script src="js/registro.js"></script>
+</body>
+</html>

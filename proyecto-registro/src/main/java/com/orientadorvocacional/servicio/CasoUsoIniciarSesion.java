@@ -3,6 +3,7 @@ package com.orientadorvocacional.servicio;
 import com.orientadorvocacional.excepciones.CredencialesInvalidasException;
 import com.orientadorvocacional.excepciones.InicioSesionFallidoException;
 import com.orientadorvocacional.modelo.SesionUsuario;
+import org.springframework.stereotype.Service;
 
 /**
  * Orquesta el proceso de inicio de sesion. Depende de la interfaz
@@ -10,6 +11,7 @@ import com.orientadorvocacional.modelo.SesionUsuario;
  * Supabase (mismo principio de inversion de dependencias que usamos
  * en CasoUsoRegistrarUsuario).
  */
+@Service
 public class CasoUsoIniciarSesion {
 
     private final IServicioAutenticacion servicioAutenticacion;

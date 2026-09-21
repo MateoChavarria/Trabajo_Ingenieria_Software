@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Iniciar sesión - Orientador Vocacional UPB</title>
+    <style>
+        body { font-family: sans-serif; max-width: 400px; margin: 60px auto; }
+        input { width: 100%; padding: 8px; margin: 6px 0; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; margin-top: 10px; }
+        .error { color: red; min-height: 20px; }
+    </style>
+</head>
+<body>
+    <h2>Iniciar sesión</h2>
+
+    <form id="formLogin">
+        <label for="correo">Correo electrónico</label>
+        <input type="email" id="correo" required>
+
+        <label for="contrasena">Contraseña</label>
+        <input type="password" id="contrasena" required>
+
+        <p class="error" id="mensajeError"></p>
+
+        <button type="submit">Iniciar sesión</button>
+    </form>
+
+    <p>¿No tienes cuenta? <a href="registro.html">Regístrate</a></p>
+
+    <script src="js/login.js"></script>
+</body>
+</html>

@@ -1,41 +1,33 @@
 package com.orientadorvocacional.config;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 /**
- * Carga las credenciales de conexion a Supabase desde un archivo
- * de propiedades, para no dejar la URL ni la llave escritas
- * directamente ("quemadas") en el codigo fuente.
+ * Guarda las credenciales necesarias para llamar a la API de
+ * autenticacion de Supabase (Supabase Auth).
+ *
+ * A diferencia de la version anterior (que leia application.properties
+ * a mano con la clase Properties de Java), aqui dejamos que Spring lea
+ * los valores por nosotros con la anotacion @Value, tomandolos del
+ * archivo src/main/resources/application.properties.
+ *
+ * NOTA IMPORTANTE: esta clase ya NO se usa para hablar con las tablas
+ * de la base de datos (usuarios, preguntas, opciones_respuesta,
+ * resultados_test). Esa conexion ahora es directa por JDBC, usando
+ * Spring Data JPA (ver src/main/resources/application.properties,
+ * seccion "spring.datasource.*"). Esta clase solo sirve para el
+ * registro y el inicio de sesion, que siguen pasando por la API de
+ * Supabase Auth.
  */
+@Component
 public class ConfiguracionSupabase {
 
-    private final String urlProyecto;
-    private final String claveAnonPublica;
+    @Value("${supabase.url}")
+    private String urlProyecto;
 
-    public ConfiguracionSupabase(String nombreArchivoPropiedades) throws IOException {
-        Properties propiedades = new Properties();
-        try (InputStream entrada = ConfiguracionSupabase.class
-                .getClassLoader()
-                .getResourceAsStream(nombreArchivoPropiedades)) {
-
-            if (entrada == null) {
-                throw new IOException(
-                        "No se encontró el archivo de configuración: " + nombreArchivoPropiedades);
-            }
-            propiedades.load(entrada);
-        }
-
-        this.urlProyecto = propiedades.getProperty("supabase.url");
-        this.claveAnonPublica = propiedades.getProperty("supabase.anonKey");
-
-        if (urlProyecto == null || urlProyecto.isBlank()
-                || claveAnonPublica == null || claveAnonPublica.isBlank()) {
-            throw new IOException(
-                    "Faltan datos en application.properties: revisen supabase.url y supabase.anonKey.");
-        }
-    }
+    @Value("${supabase.anonKey}")
+    private String claveAnonPublica;
 
     public String getUrlProyecto() {
         return urlProyecto;

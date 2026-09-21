@@ -6,6 +6,7 @@ import com.orientadorvocacional.excepciones.CorreoYaRegistradoException;
 import com.orientadorvocacional.excepciones.RegistroFallidoException;
 import com.orientadorvocacional.modelo.Usuario;
 import com.orientadorvocacional.repositorio.IRepositorioUsuario;
+import org.springframework.stereotype.Service;
 
 /**
  * Orquesta el proceso completo de registro:
@@ -19,6 +20,7 @@ import com.orientadorvocacional.repositorio.IRepositorioUsuario;
  * si mañana cambian de proveedor, esta clase no se toca, solo se
  * le inyecta una implementacion distinta desde donde se construye.
  */
+@Service
 public class CasoUsoRegistrarUsuario {
 
     private final IServicioAutenticacion servicioAutenticacion;
