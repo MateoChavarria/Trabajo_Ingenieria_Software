@@ -12,6 +12,7 @@ const elementoOpciones = document.getElementById("opciones");
 const elementoAviso = document.getElementById("avisoError");
 const elementoBarraProgreso = document.getElementById("barraProgreso");
 const elementoTextoProgreso = document.getElementById("textoProgreso");
+const barraProgreso = new BarraProgreso(elementoBarraProgreso, elementoTextoProgreso, "{actual} de {total} preguntas respondidas");
 const botonAnterior = document.getElementById("btnAnterior");
 const botonSiguiente = document.getElementById("btnSiguiente");
 const pantallaTest = document.getElementById("pantallaTest");
@@ -85,12 +86,8 @@ function mostrarPregunta(indice) {
 // cada vez que el usuario avanza o retrocede una pregunta"
 // ============================================================
 function actualizarBarraProgreso() {
-    const totalPreguntas = preguntas.length;
     const totalRespondidas = Object.keys(respuestasSeleccionadas).length;
-    const porcentaje = totalPreguntas === 0 ? 0 : Math.round((totalRespondidas / totalPreguntas) * 100);
-
-    elementoBarraProgreso.style.width = porcentaje + "%";
-    elementoTextoProgreso.textContent = `${totalRespondidas} de ${totalPreguntas} preguntas respondidas`;
+    barraProgreso.actualizar(totalRespondidas, preguntas.length);
 }
 
 // ============================================================
@@ -199,7 +196,7 @@ function mostrarResultado(resultado) {
 
     Object.entries(resultado).forEach(([area, puntaje]) => {
         const item = document.createElement("li");
-        item.textContent = `${area}: ${puntaje} puntos`;
+        item.textContent = `${area}: ${puntaje}% de afinidad`;
         lista.appendChild(item);
     });
 }

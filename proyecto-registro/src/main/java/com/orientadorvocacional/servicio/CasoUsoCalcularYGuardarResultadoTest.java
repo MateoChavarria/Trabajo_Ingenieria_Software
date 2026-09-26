@@ -10,23 +10,28 @@ import com.orientadorvocacional.repositorio.IRepositorioResultadoTest;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Orquesta el calculo del resultado del test vocacional:
- *   1) trae de nuevo el cuestionario completo (para saber el area y
- *      el peso de cada opcion que el usuario marco),
- *   2) suma los pesos de las opciones elegidas, agrupados por area,
- *   3) guarda el resultado asociado al usuario.
+ *   1) trae de nuevo el cuestionario completo (el servidor nunca
+ *      confia en pesos que le mande el navegador),
+ *   2) calcula el puntaje CRUDO obtenido por area (suma de pesos de
+ *      las opciones elegidas),
+ *   3) calcula el puntaje MAXIMO posible por area (si el usuario
+ *      hubiera elegido, en cada pregunta, la opcion que mas suma a
+ *      esa area),
+ *   4) normaliza: afinidad% = obtenido / maximo * 100 — esto es lo
+ *      que permite comparar areas entre si de forma justa, sin
+ *      importar cuantas preguntas toque cada una,
+ *   5) guarda el resultado (ya en porcentajes) asociado al usuario.
  *
- * Tarea tecnica de esta semana: "Guardar el resultado del test
- * asociado al usuario".
- *
- * Se vuelve a consultar el cuestionario en el servidor (en vez de
- * confiar en lo que mande el navegador) a proposito: si solo
- * confiaramos en los pesos que nos manda el frontend, alguien podria
- * manipular la peticion HTTP y "tunear" su resultado. Aqui el
- * servidor es la unica fuente de verdad para los pesos.
+ * Esta afinidad por area es, ademas, la misma que se va a usar para
+ * la "afinidad a una carrera" en la Historia 5: cada carrera se va a
+ * asociar a UNA de estas areas, y su afinidad sera directamente la
+ * de esa area — no hace falta un calculo distinto.
  */
 @Service
 public class CasoUsoCalcularYGuardarResultadoTest {
@@ -40,40 +45,33 @@ public class CasoUsoCalcularYGuardarResultadoTest {
         this.repositorioResultadoTest = repositorioResultadoTest;
     }
 
-    /**
-     * @param usuarioId             id del usuario que realizo el test
-     * @param respuestasSeleccionadas mapa de "id de pregunta" -> "id de
-     *                                opcion elegida", tal como lo arma
-     *                                el frontend mientras el usuario
-     *                                responde
-     * @return el detalle del puntaje por area, para mostrarselo de una
-     *         vez al usuario en la misma respuesta
-     */
     public Map<String, Integer> ejecutar(String usuarioId, Map<Integer, Integer> respuestasSeleccionadas)
             throws CuestionarioFallidoException, ResultadoTestFallidoException {
 
-        Map<String, Integer> puntajePorArea = calcularPuntajePorArea(respuestasSeleccionadas);
+        var preguntas = repositorioPreguntas.obtenerCuestionarioCompleto();
 
-        ResultadoTest resultado = new ResultadoTest(usuarioId, puntajePorArea);
+        Map<String, Integer> puntajeObtenidoPorArea = calcularPuntajeObtenido(preguntas, respuestasSeleccionadas);
+        Map<String, Integer> puntajeMaximoPorArea = calcularPuntajeMaximoPosible(preguntas);
+        Map<String, Integer> afinidadPorArea = normalizarComoPocentaje(puntajeObtenidoPorArea, puntajeMaximoPorArea);
+
+        ResultadoTest resultado = new ResultadoTest(usuarioId, afinidadPorArea);
         repositorioResultadoTest.guardar(resultado);
 
-        return puntajePorArea;
+        return afinidadPorArea;
     }
 
-    private Map<String, Integer> calcularPuntajePorArea(Map<Integer, Integer> respuestasSeleccionadas)
-            throws CuestionarioFallidoException {
-
-        var preguntas = repositorioPreguntas.obtenerCuestionarioCompleto();
+    /**
+     * Suma, por area, los pesos de las opciones que el usuario
+     * realmente eligio.
+     */
+    private Map<String, Integer> calcularPuntajeObtenido(Iterable<Pregunta> preguntas,
+                                                          Map<Integer, Integer> respuestasSeleccionadas) {
         Map<String, Integer> puntajePorArea = new HashMap<>();
 
         for (Pregunta pregunta : preguntas) {
             Integer idOpcionElegida = respuestasSeleccionadas.get(pregunta.getId());
-
-            // Si el usuario no respondio esta pregunta, simplemente no
-            // suma nada (no deberia pasar si el frontend valida bien
-            // antes de enviar, pero el backend no confia ciegamente).
             if (idOpcionElegida == null) {
-                continue;
+                continue; // pregunta no respondida
             }
 
             for (OpcionRespuesta opcion : pregunta.getOpciones()) {
@@ -85,5 +83,52 @@ public class CasoUsoCalcularYGuardarResultadoTest {
         }
 
         return puntajePorArea;
+    }
+
+    /**
+     * Para cada pregunta, encuentra el peso mas alto que cada area
+     * podria haber recibido en esa pregunta (la mejor opcion posible
+     * para esa area), y lo suma a lo largo de todas las preguntas.
+     * Este es el "techo" contra el que se compara lo que el usuario
+     * obtuvo de verdad.
+     */
+    private Map<String, Integer> calcularPuntajeMaximoPosible(Iterable<Pregunta> preguntas) {
+        Map<String, Integer> maximoPorArea = new HashMap<>();
+
+        for (Pregunta pregunta : preguntas) {
+            Map<String, Integer> maximoEnEstaPregunta = new HashMap<>();
+
+            for (OpcionRespuesta opcion : pregunta.getOpciones()) {
+                maximoEnEstaPregunta.merge(opcion.getArea(), opcion.getPeso(), Math::max);
+            }
+
+            maximoEnEstaPregunta.forEach((area, peso) -> maximoPorArea.merge(area, peso, Integer::sum));
+        }
+
+        return maximoPorArea;
+    }
+
+    /**
+     * afinidad% = obtenido / maximo * 100, redondeado. Si un area no
+     * tiene maximo (no deberia pasar, pero por seguridad), su
+     * afinidad queda en 0 en vez de dividir por cero.
+     */
+    private Map<String, Integer> normalizarComoPocentaje(Map<String, Integer> obtenidoPorArea,
+                                                          Map<String, Integer> maximoPorArea) {
+        Map<String, Integer> afinidadPorArea = new HashMap<>();
+
+        Set<String> todasLasAreas = new HashSet<>();
+        todasLasAreas.addAll(obtenidoPorArea.keySet());
+        todasLasAreas.addAll(maximoPorArea.keySet());
+
+        for (String area : todasLasAreas) {
+            int obtenido = obtenidoPorArea.getOrDefault(area, 0);
+            int maximo = maximoPorArea.getOrDefault(area, 0);
+
+            int porcentaje = (maximo == 0) ? 0 : (int) Math.round((obtenido * 100.0) / maximo);
+            afinidadPorArea.put(area, porcentaje);
+        }
+
+        return afinidadPorArea;
     }
 }
