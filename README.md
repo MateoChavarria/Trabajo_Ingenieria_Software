@@ -15,4 +15,10 @@ mvn test
 [Badge o enlace a la pestaña Actions]
 
 ## Nota de uso de IA
-[a definir — avísame si quieres que te arme el texto]
+[Durante el desarrollo de este proyecto se utilizaron herramientas de inteligencia artificial (Claude, de Anthropic) como apoyo para:
+
+- Resolver errores de configuración de Git y GitHub (conexión del repositorio, `.gitignore`, ramas y Pull Requests).
+- Orientar la configuración del pipeline de integración continua y la protección de credenciales (`application.properties.example`).
+- Redactar y revisar la documentación del repositorio (este README).
+
+La IA se usó únicamente como asistente. El diseño, el código del proyecto, las decisiones técnicas y la revisión final fueron realizados por el equipo, y todo lo sugerido por la IA fue verificado y probado por los integrantes antes de incluirse.]
