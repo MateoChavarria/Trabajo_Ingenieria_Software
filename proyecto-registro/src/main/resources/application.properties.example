@@ -7,8 +7,8 @@ server.port=8080
 # SUPABASE AUTH (solo para registro e inicio de sesion)
 # ============================================================
 # Sacar de: Supabase -> su proyecto -> Project Settings -> API
-supabase.url=https://xwhmlaxjjxxkrdmbzqaa.supabase.co
-supabase.anonKey=sb_publishable_XqASeJ4RNfbXcK5X18SS8A_GIgFFD9k 
+supabase.url=https://TU_PROYECTO.supabase.co
+supabase.anonKey=TU_ANON_KEY
 
 # ============================================================
 # CONEXION JDBC DIRECTA A POSTGRESQL (via Connection Pooler)
@@ -20,9 +20,9 @@ supabase.anonKey=sb_publishable_XqASeJ4RNfbXcK5X18SS8A_GIgFFD9k
 # El usuario se ve algo asi: postgres.xwhmlaxjjxxkrdmbzqaa
 # La contraseña es la que definieron al crear el proyecto en Supabase
 # (si no la recuerdan, se puede resetear en esa misma pantalla).
-spring.datasource.url=jdbc:postgresql://aws-0-us-west-2.pooler.supabase.com:5432/postgres
-spring.datasource.username=postgres.xwhmlaxjjxxkrdmbzqaa
-spring.datasource.password=Colegiodemaria2024
+spring.datasource.url=jdbc:postgresql://TU_HOST_POOLER.pooler.supabase.com:5432/postgres
+spring.datasource.username=postgres.TU_ID_PROYECTO
+spring.datasource.password=TU_PASSWORD
 spring.datasource.driver-class-name=org.postgresql.Driver
 
 # ============================================================
