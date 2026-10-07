@@ -3,13 +3,12 @@ package com.orientadorvocacional.repositorio;
 import com.orientadorvocacional.excepciones.ResultadoTestFallidoException;
 import com.orientadorvocacional.modelo.ResultadoTest;
 
-/**
- * Contrato para guardar el resultado de un test vocacional. Se separa
- * de IRepositorioUsuario e IRepositorioPreguntas porque es una
- * responsabilidad distinta (principio de segregacion de interfaces),
- * aunque las tres terminen usando JPA por dentro.
- */
+import java.util.List;
+
 public interface IRepositorioResultadoTest {
 
     void guardar(ResultadoTest resultado) throws ResultadoTestFallidoException;
+
+    /** Historial completo de intentos de un usuario, del mas reciente al mas antiguo. */
+    List<ResultadoTest> obtenerPorUsuario(String usuarioId) throws ResultadoTestFallidoException;
 }

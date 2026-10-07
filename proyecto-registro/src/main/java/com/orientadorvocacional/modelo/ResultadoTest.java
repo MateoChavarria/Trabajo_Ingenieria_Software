@@ -49,4 +49,11 @@ public class ResultadoTest {
         }
         this.detallePorArea = detallePorArea;
     }
+
+        public void setFecha(LocalDateTime fecha) {
+        if (fecha == null) {
+            throw new IllegalArgumentException("La fecha no puede ser nula.");
+        }
+        this.fecha = fecha;
+    }
 }

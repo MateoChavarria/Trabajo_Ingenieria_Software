@@ -32,7 +32,7 @@ public class CasoUsoObtenerCarrerasRecomendadas {
     private static final int UMBRAL_AFINIDAD_MINIMA = 40;
 
     /** Cuantas carreras como maximo se muestran, para no saturar la pantalla. */
-    private static final int CANTIDAD_MAXIMA_RECOMENDACIONES = 10;
+    private static final int CANTIDAD_MAXIMA_RECOMENDACIONES = 5;
 
     private final ICarreraRepositorio repositorioCarreras;
 

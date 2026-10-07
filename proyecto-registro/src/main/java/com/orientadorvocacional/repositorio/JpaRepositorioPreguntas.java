@@ -29,7 +29,7 @@ public class JpaRepositorioPreguntas implements IRepositorioPreguntas {
     @Override
     public List<Pregunta> obtenerCuestionarioCompleto() throws CuestionarioFallidoException {
         try {
-            List<PreguntaEntity> entidades = repositorioJpa.findAllByOrderByIdAsc();
+            List<PreguntaEntity> entidades = repositorioJpa.findAllConOpcionesOrderByIdAsc();
             return convertirAModeloDeDominio(entidades);
 
         } catch (Exception excepcion) {

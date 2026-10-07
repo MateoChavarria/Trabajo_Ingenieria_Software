@@ -1,6 +1,7 @@
 package com.orientadorvocacional.repositorio;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.orientadorvocacional.entidad.ResultadoTestEntity;
 import com.orientadorvocacional.excepciones.ResultadoTestFallidoException;
@@ -8,16 +9,11 @@ import com.orientadorvocacional.modelo.ResultadoTest;
 import com.orientadorvocacional.repositorio.jpa.ResultadoTestJpaRepository;
 import org.springframework.stereotype.Repository;
 
-/**
- * Implementacion de IRepositorioResultadoTest que guarda el resultado
- * directamente en PostgreSQL usando JPA.
- *
- * El mapa area->puntaje (Map<String, Integer>) se convierte a texto
- * JSON antes de guardarlo, porque la columna "detalle" de la tabla es
- * de tipo texto, no una estructura de Java. ObjectMapper (de Jackson,
- * que ya viene incluido con spring-boot-starter-web) hace esa
- * conversion por nosotros.
- */
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 @Repository
 public class JpaRepositorioResultadoTest implements IRepositorioResultadoTest {
 
@@ -34,8 +30,8 @@ public class JpaRepositorioResultadoTest implements IRepositorioResultadoTest {
         try {
             String detalleJson = mapeadorJson.writeValueAsString(resultado.getDetallePorArea());
 
-                        ResultadoTestEntity entidad = new ResultadoTestEntity(
-                    java.util.UUID.fromString(resultado.getUsuarioId()),
+            ResultadoTestEntity entidad = new ResultadoTestEntity(
+                    UUID.fromString(resultado.getUsuarioId()),
                     resultado.getFecha(),
                     detalleJson
             );
@@ -43,15 +39,33 @@ public class JpaRepositorioResultadoTest implements IRepositorioResultadoTest {
             repositorioJpa.save(entidad);
 
         } catch (IllegalArgumentException excepcion) {
-            throw new ResultadoTestFallidoException(
-                    "El id del usuario no tiene un formato UUID válido.", excepcion);
+            throw new ResultadoTestFallidoException("El id del usuario no tiene un formato UUID válido.", excepcion);
         } catch (JsonProcessingException excepcion) {
-            throw new ResultadoTestFallidoException(
-                    "No se pudo convertir el detalle del resultado a formato JSON.", excepcion);
+            throw new ResultadoTestFallidoException("No se pudo convertir el detalle del resultado a JSON.", excepcion);
+        } catch (Exception excepcion) {
+            throw new ResultadoTestFallidoException("No se pudo guardar el resultado del test.", excepcion);
+        }
+    }
+
+    @Override
+    public List<ResultadoTest> obtenerPorUsuario(String usuarioId) throws ResultadoTestFallidoException {
+        try {
+            List<ResultadoTestEntity> entidades =
+                    repositorioJpa.findByUsuarioIdOrderByFechaDesc(UUID.fromString(usuarioId));
+
+            List<ResultadoTest> resultados = new ArrayList<>();
+            for (ResultadoTestEntity entidad : entidades) {
+                Map<String, Integer> detalle = mapeadorJson.readValue(
+                        entidad.getDetalle(), new TypeReference<Map<String, Integer>>() {});
+
+                ResultadoTest resultado = new ResultadoTest(usuarioId, detalle);
+                resultado.setFecha(entidad.getFecha());
+                resultados.add(resultado);
+            }
+            return resultados;
 
         } catch (Exception excepcion) {
-            throw new ResultadoTestFallidoException(
-                    "No se pudo guardar el resultado del test en la base de datos.", excepcion);
+            throw new ResultadoTestFallidoException("No se pudo consultar el historial de resultados.", excepcion);
         }
     }
 }

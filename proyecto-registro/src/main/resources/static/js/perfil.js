@@ -40,3 +40,42 @@ function renderizarPerfil(perfil) {
         contenedorCompleto.appendChild(bloque);
     });
 }
+
+async function cargarHistorial() {
+    const sesion = obtenerSesion();
+    const contenedor = document.getElementById("listaHistorial");
+    if (!sesion || !contenedor) return;
+
+    try {
+        const respuesta = await fetch(`/api/perfil/historial?usuarioId=${sesion.idUsuario}`);
+        if (!respuesta.ok) {
+            contenedor.textContent = "No se pudo cargar el historial.";
+            return;
+        }
+
+        const historial = await respuesta.json();
+
+        if (historial.length === 0) {
+            contenedor.textContent = "Este es tu primer test.";
+            return;
+        }
+
+        contenedor.innerHTML = "";
+        historial.forEach((intento) => {
+            const fecha = new Date(intento.fecha).toLocaleString("es-CO", {
+                dateStyle: "medium", timeStyle: "short"
+            });
+            const areas = intento.perfil.areasDominantes.map(a => a.nombreAmigable).join(", ");
+
+            const fila = document.createElement("p");
+            fila.style.marginBottom = "10px";
+            fila.innerHTML = `<b>${fecha}</b> — ${areas}`;
+            contenedor.appendChild(fila);
+        });
+
+    } catch (error) {
+        contenedor.textContent = "No se pudo conectar con el servidor.";
+    }
+}
+
+cargarHistorial();
