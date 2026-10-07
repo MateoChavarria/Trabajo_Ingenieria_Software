@@ -1,0 +1,98 @@
+:root{
+  --ink:#141a3d; --paper:#f3f5fc; --blue:#3a36e0; --sun:#ffc83d;
+  --mint:#6fe0c0; --rose:#ff8fa3; --line:#d9ddf0; --white:#fff;
+  --display:'Bricolage Grotesque',Georgia,sans-serif;
+  --body:'Figtree',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--body);color:var(--ink);background:var(--paper);line-height:1.6;font-size:1.0625rem;opacity:0;animation:aparecer .4s ease forwards}
+@keyframes aparecer{to{opacity:1}}
+h1,h2,h3{font-family:var(--display);line-height:1.05;letter-spacing:-.02em}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--blue);outline-offset:3px;border-radius:6px}
+.wrap{max-width:960px;margin:0 auto;padding:0 24px}
+
+/* Nav */
+header.nav{padding:20px 0;border-bottom:1px solid var(--line);margin-bottom:8px}
+header.nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.logo{font-family:var(--display);font-weight:800;font-size:1.3rem;text-decoration:none;display:flex;align-items:center;gap:10px}
+.logo i{width:24px;height:24px;border-radius:7px;background:var(--blue);display:grid;grid-template-columns:1fr 1fr;gap:2px;padding:4px}
+.logo i b{background:var(--sun);border-radius:2px;display:block}
+.logo i b:nth-child(2){background:var(--mint)}
+.logo i b:nth-child(3){background:var(--rose)}
+.logo i b:nth-child(4){background:var(--white)}
+.nav-links{display:flex;gap:20px;font-weight:600;align-items:center;flex-wrap:wrap}
+.nav-links a{text-decoration:none;font-size:.95rem}
+.nav-links a:hover{text-decoration:underline;text-underline-offset:5px}
+
+/* Botones */
+.btn{display:inline-block;background:var(--ink);color:var(--white);padding:13px 24px;border-radius:999px;font-weight:700;text-decoration:none;border:none;cursor:pointer;font-size:.95rem;transition:transform .15s,background .15s}
+.btn:hover{background:var(--blue);transform:translateY(-2px)}
+.btn:active{transform:translateY(0)}
+.btn.sun{background:var(--sun);color:var(--ink)}
+.btn.sun:hover{background:#ffd666}
+.btn.outline{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+.btn.outline:hover{background:var(--ink);color:var(--white)}
+.btn.block{display:block;width:100%;text-align:center}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+/* Tarjetas neo-brutalistas */
+.card{background:var(--white);border:2px solid var(--ink);border-radius:20px;padding:24px;margin-bottom:18px;box-shadow:6px 6px 0 var(--ink);transition:transform .15s,box-shadow .15s}
+.card.hoverable:hover{transform:translate(-3px,-3px);box-shadow:9px 9px 0 var(--ink)}
+.card h3{font-size:1.25rem;margin-bottom:6px}
+
+/* Hero (pagina de inicio) */
+.hero{padding:56px 0 48px}
+.hero h1{font-size:clamp(2.2rem,5vw,3.4rem);font-weight:800;max-width:16ch}
+.hero p{margin:16px 0 26px;max-width:52ch;color:#3d4372;font-size:1.1rem}
+.hero .acts{display:flex;gap:12px;flex-wrap:wrap}
+
+/* Formularios (registro / login) */
+.form-card{max-width:420px;margin:40px auto;background:var(--white);border:2px solid var(--ink);border-radius:22px;padding:34px;box-shadow:8px 8px 0 var(--ink)}
+.form-card h2{margin-bottom:6px}
+.form-card .sub{color:#5b6190;margin-bottom:22px;font-size:.95rem}
+label{display:block;font-weight:600;font-size:.9rem;margin:14px 0 6px}
+input[type=email],input[type=password],input[type=text]{width:100%;padding:12px 14px;border:2px solid var(--line);border-radius:12px;font-family:var(--body);font-size:1rem;transition:border-color .15s}
+input:focus{border-color:var(--blue);outline:none}
+small{color:#5b6190;font-size:.82rem}
+
+/* Alertas */
+.alerta{border-radius:14px;padding:12px 16px;margin:14px 0;font-weight:600;font-size:.92rem}
+.alerta.error{background:#ffe3e8;color:#b3233f;border:2px solid var(--rose)}
+.alerta.aviso{background:#fff4d6;color:#8a6400;border:2px solid var(--sun)}
+.alerta.exito{background:#e3fbf3;color:#117a56;border:2px solid var(--mint)}
+
+/* Badges */
+.badge-area{display:inline-block;background:var(--mint);padding:5px 14px;border-radius:999px;font-size:.82rem;font-weight:700;margin-bottom:10px}
+
+/* Barra de afinidad / progreso */
+.bar{margin-bottom:14px}
+.bar div{display:flex;justify-content:space-between;font-weight:700;font-size:.95rem;margin-bottom:6px}
+.bar span{display:block;height:14px;border-radius:99px;background:var(--line);overflow:hidden}
+.bar span i{display:block;height:100%;border-radius:99px;background:var(--blue);transition:width .6s cubic-bezier(.3,1.2,.4,1)}
+
+.motivo{color:#5b6190;font-size:.93rem;margin-top:8px}
+.detalle-seccion{margin-top:18px}
+.detalle-seccion h4{font-size:.95rem;margin-bottom:6px;color:#3d4372;text-transform:uppercase;letter-spacing:.03em}
+
+/* Grilla de tarjetas */
+.grid-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}
+
+/* Pantalla de carga */
+.pantalla-carga{display:none;position:fixed;inset:0;background:rgba(20,26,61,.92);color:var(--white);align-items:center;justify-content:center;flex-direction:column;gap:18px;z-index:50}
+.spinner{width:48px;height:48px;border:5px solid #444b8c;border-top-color:var(--sun);border-radius:50%;animation:girar .8s linear infinite}
+@keyframes girar{to{transform:rotate(360deg)}}
+
+/* Opciones del test, como tarjetas seleccionables */
+.opcion-test{display:block;border:2px solid var(--line);border-radius:14px;padding:14px 16px;margin:10px 0;cursor:pointer;font-weight:600;transition:border-color .15s,background .15s}
+.opcion-test:hover{border-color:var(--blue)}
+.opcion-test input{margin-right:10px}
+.opcion-test.seleccionada{border-color:var(--blue);background:#eeeeff}
+
+footer.pie{padding:30px 0;border-top:1px solid var(--line);color:#5b6190;font-size:.9rem;text-align:center;margin-top:40px}
+
+@media(max-width:640px){
+  .nav-links{display:none}
+  .form-card{margin:24px auto;padding:24px}
+}

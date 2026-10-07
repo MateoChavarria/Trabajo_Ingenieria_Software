@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Tu perfil vocacional - Orientador Vocacional UPB</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/estilo.css">
+</head>
+<body>
+<header class="nav" id="nav"></header>
+<main class="wrap">
+    <h1 style="margin:28px 0 6px">Tu perfil vocacional</h1>
+    <p style="color:#5b6190;margin-bottom:24px">Esto es lo que más se destacó en tus respuestas.</p>
+
+    <h3 style="margin-bottom:12px">Tus áreas dominantes</h3>
+    <div id="listaDominantes" class="grid-cards"></div>
+
+    <h3 style="margin:28px 0 12px">Tu afinidad en todas las áreas</h3>
+    <div id="listaCompleta" class="card"></div>
+
+    <a class="btn sun" href="carreras.html" style="margin-top:10px">Ver carreras recomendadas</a>
+</main>
+<footer class="pie">Orientador Vocacional UPB · Proyecto académico</footer>
+<script src="js/sesion.js"></script>
+<script>requerirSesion(); pintarNav();</script>
+<script src="js/perfil.js"></script>
+</body>
+</html>

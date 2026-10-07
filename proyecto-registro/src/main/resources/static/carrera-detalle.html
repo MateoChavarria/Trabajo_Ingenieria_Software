@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalle de la carrera - Orientador Vocacional UPB</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/estilo.css">
+</head>
+<body>
+<header class="nav" id="nav"></header>
+<main class="wrap" style="max-width:700px">
+    <a href="javascript:history.back()" style="display:inline-block;margin:20px 0;font-weight:700;text-decoration:none">&larr; Volver</a>
+
+    <div class="card">
+        <span id="badgeArea" class="badge-area"></span>
+        <h1 id="nombreCarrera">Cargando...</h1>
+
+        <div id="bloqueAfinidad" class="bar" style="display:none;margin-top:16px">
+            <div><b>Tu afinidad</b><b id="textoAfinidad"></b></div>
+            <span><i id="barraAfinidad" style="width:0%"></i></span>
+        </div>
+        <p id="motivoRecomendacion" class="motivo"></p>
+
+        <div class="detalle-seccion">
+            <h4>Descripción</h4>
+            <p id="descripcionCarrera"></p>
+        </div>
+
+        <div class="detalle-seccion">
+            <h4>Campo laboral</h4>
+            <p id="campoLaboralCarrera"></p>
+        </div>
+
+        <div class="detalle-seccion">
+            <h4>Datos del programa</h4>
+            <p id="datosExtra"></p>
+        </div>
+    </div>
+</main>
+<footer class="pie">Orientador Vocacional UPB · Proyecto académico</footer>
+<script src="js/sesion.js"></script>
+<script>pintarNav();</script>
+<script src="js/carrera-detalle.js"></script>
+</body>
+</html>

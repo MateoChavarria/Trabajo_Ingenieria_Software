@@ -4,7 +4,7 @@ document.getElementById("formLogin").addEventListener("submit", async (evento) =
     const correo = document.getElementById("correo").value;
     const contrasena = document.getElementById("contrasena").value;
     const mensajeError = document.getElementById("mensajeError");
-    mensajeError.textContent = "";
+    mensajeError.innerHTML = "";
 
     try {
         const respuesta = await fetch("/api/auth/login", {
@@ -14,23 +14,21 @@ document.getElementById("formLogin").addEventListener("submit", async (evento) =
         });
 
         if (respuesta.ok) {
-            // El backend devuelve la SesionUsuario completa (tokenAcceso,
-            // idUsuario, fechaExpiracion). La guardamos en localStorage
-            // del navegador para no pedir login en cada pantalla, y
-            // porque test.js va a necesitar el idUsuario para asociar
-            // el resultado del test a este usuario.
             const sesion = await respuesta.json();
             localStorage.setItem("sesion", JSON.stringify(sesion));
 
-            window.location.href = "test.html";
+            // Si llegamos aqui porque requerirSesion() nos mando desde
+            // otra pagina (test, perfil, carreras), volvemos a ella en
+            // vez de ir siempre al test por defecto.
+            const parametros = new URLSearchParams(window.location.search);
+            const volver = parametros.get("volver");
+            window.location.href = volver ? volver : "test.html";
         } else {
-            // Mensaje generico a proposito (definido en el backend):
-            // nunca se dice si fallo el correo o la contraseña.
             const textoError = await respuesta.text();
-            mensajeError.textContent = textoError;
+            mensajeError.innerHTML = `<div class="alerta error">${textoError}</div>`;
         }
 
     } catch (error) {
-        mensajeError.textContent = "No se pudo conectar con el servidor.";
+        mensajeError.innerHTML = `<div class="alerta error">No se pudo conectar con el servidor.</div>`;
     }
 });

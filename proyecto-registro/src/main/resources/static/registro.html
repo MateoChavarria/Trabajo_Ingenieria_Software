@@ -2,16 +2,17 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Registro - Orientador Vocacional UPB</title>
-    <style>
-        body { font-family: sans-serif; max-width: 400px; margin: 60px auto; }
-        input { width: 100%; padding: 8px; margin: 6px 0; box-sizing: border-box; }
-        button { width: 100%; padding: 10px; margin-top: 10px; }
-        .error { color: red; min-height: 20px; }
-    </style>
+    <title>Crear cuenta - Orientador Vocacional UPB</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/estilo.css">
 </head>
 <body>
-    <h2>Crear cuenta</h2>
+<header class="nav" id="nav"></header>
+<div class="form-card">
+    <h2>Crear tu cuenta</h2>
+    <p class="sub">Para guardar tus resultados y hacer el test vocacional.</p>
 
     <form id="formRegistro">
         <label for="correo">Correo electrónico</label>
@@ -21,13 +22,15 @@
         <input type="password" id="contrasena" required>
         <small>Mínimo 8 caracteres, 1 mayúscula y 1 número.</small>
 
-        <p class="error" id="mensajeError"></p>
+        <div id="mensajeError"></div>
 
-        <button type="submit">Registrarme</button>
+        <button type="submit" class="btn block" style="margin-top:20px">Registrarme</button>
     </form>
 
-    <p>¿Ya tienes cuenta? <a href="login.html">Inicia sesión</a></p>
-
-    <script src="js/registro.js"></script>
+    <p style="margin-top:18px;text-align:center;color:#5b6190">¿Ya tienes cuenta? <a href="login.html" style="color:var(--blue);font-weight:700">Inicia sesión</a></p>
+</div>
+<script src="js/sesion.js"></script>
+<script>pintarNav();</script>
+<script src="js/registro.js"></script>
 </body>
 </html>

@@ -1,27 +1,22 @@
 // ============================================================
-// ESTADO DEL TEST (todo lo que se necesita mientras el usuario responde)
+// ESTADO DEL TEST
 // ============================================================
-let preguntas = [];               // la lista completa que trae el backend
-let indiceActual = 0;             // en que pregunta va el usuario ahora
-const respuestasSeleccionadas = {}; // { idPregunta: idOpcion }, se va llenando en memoria
+let preguntas = [];
+let indiceActual = 0;
+const respuestasSeleccionadas = {};
 
-// Elementos del DOM que vamos a actualizar seguido, los guardamos una
-// sola vez en variables para no tener que buscarlos cada vez.
 const elementoPregunta = document.getElementById("pregunta");
 const elementoOpciones = document.getElementById("opciones");
 const elementoAviso = document.getElementById("avisoError");
 const elementoBarraProgreso = document.getElementById("barraProgreso");
 const elementoTextoProgreso = document.getElementById("textoProgreso");
-const barraProgreso = new BarraProgreso(elementoBarraProgreso, elementoTextoProgreso, "{actual} de {total} preguntas respondidas");
 const botonAnterior = document.getElementById("btnAnterior");
 const botonSiguiente = document.getElementById("btnSiguiente");
 const pantallaTest = document.getElementById("pantallaTest");
-const pantallaResultado = document.getElementById("pantallaResultado");
 const pantallaCarga = document.getElementById("pantallaCarga");
 
-// ============================================================
-// ARRANQUE: cargar el cuestionario apenas se abre la pagina
-// ============================================================
+const barraProgreso = new BarraProgreso(elementoBarraProgreso, elementoTextoProgreso, "{actual} de {total} preguntas respondidas");
+
 async function cargarCuestionario() {
     try {
         const respuesta = await fetch("/api/test/preguntas");
@@ -48,27 +43,28 @@ async function cargarCuestionario() {
     }
 }
 
-// ============================================================
-// MOSTRAR UNA PREGUNTA A LA VEZ
-// ============================================================
 function mostrarPregunta(indice) {
     const pregunta = preguntas[indice];
 
     elementoPregunta.textContent = `${indice + 1}/${preguntas.length} — ${pregunta.texto}`;
-    elementoAviso.textContent = "";
+    elementoAviso.innerHTML = "";
     elementoOpciones.innerHTML = "";
 
     const opcionYaElegida = respuestasSeleccionadas[pregunta.id];
 
     pregunta.opciones.forEach((opcion) => {
         const etiqueta = document.createElement("label");
-        etiqueta.className = "opcion";
+        etiqueta.className = "opcion-test" + (opcionYaElegida === opcion.id ? " seleccionada" : "");
 
         const radio = document.createElement("input");
         radio.type = "radio";
         radio.name = "opcion";
         radio.value = opcion.id;
         radio.checked = opcionYaElegida === opcion.id;
+        radio.addEventListener("change", () => {
+            document.querySelectorAll(".opcion-test").forEach(el => el.classList.remove("seleccionada"));
+            etiqueta.classList.add("seleccionada");
+        });
 
         etiqueta.appendChild(radio);
         etiqueta.append(" " + opcion.texto);
@@ -79,28 +75,16 @@ function mostrarPregunta(indice) {
     botonSiguiente.textContent = (indice === preguntas.length - 1) ? "Finalizar" : "Siguiente";
 }
 
-// ============================================================
-// BARRA Y TEXTO DE PROGRESO
-// Tarea tecnica: "calcular el porcentaje de avance segun cuantas
-// preguntas van respondidas del total" + "actualizar ese indicador
-// cada vez que el usuario avanza o retrocede una pregunta"
-// ============================================================
 function actualizarBarraProgreso() {
     const totalRespondidas = Object.keys(respuestasSeleccionadas).length;
     barraProgreso.actualizar(totalRespondidas, preguntas.length);
 }
 
-// ============================================================
-// LEER LA OPCION QUE EL USUARIO MARCO EN PANTALLA
-// ============================================================
 function obtenerOpcionSeleccionada() {
     const radioMarcado = document.querySelector('input[name="opcion"]:checked');
     return radioMarcado ? parseInt(radioMarcado.value, 10) : null;
 }
 
-// ============================================================
-// BOTON "ANTERIOR"
-// ============================================================
 botonAnterior.addEventListener("click", () => {
     if (indiceActual === 0) return;
     indiceActual--;
@@ -108,20 +92,15 @@ botonAnterior.addEventListener("click", () => {
     actualizarBarraProgreso();
 });
 
-// ============================================================
-// BOTON "SIGUIENTE" / "FINALIZAR"
-// ============================================================
 botonSiguiente.addEventListener("click", async () => {
     const preguntaActual = preguntas[indiceActual];
     const idOpcionElegida = obtenerOpcionSeleccionada();
 
-    // No dejar avanzar si el usuario no respondio la pregunta obligatoria.
     if (idOpcionElegida === null) {
-        elementoAviso.textContent = "Debes seleccionar una opción para continuar.";
+        elementoAviso.innerHTML = `<div class="alerta aviso">Debes seleccionar una opción para continuar.</div>`;
         return;
     }
 
-    // Guardar temporalmente en pantalla la respuesta marcada.
     respuestasSeleccionadas[preguntaActual.id] = idOpcionElegida;
     actualizarBarraProgreso();
 
@@ -135,71 +114,80 @@ botonSiguiente.addEventListener("click", async () => {
     }
 });
 
-// ============================================================
-// ENVIAR TODAS LAS RESPUESTAS AL BACKEND Y MOSTRAR EL RESULTADO
-// ============================================================
 async function enviarRespuestasYMostrarResultado() {
-    const sesionGuardada = localStorage.getItem("sesion");
-    if (!sesionGuardada) {
-        elementoAviso.textContent = "Tu sesión expiró. Vuelve a iniciar sesión.";
+    const sesion = obtenerSesion();
+    if (!sesion) {
+        elementoAviso.innerHTML = `<div class="alerta error">Tu sesión expiró. Vuelve a iniciar sesión.</div>`;
         return;
     }
-    const sesion = JSON.parse(sesionGuardada);
 
-    // Convertimos el objeto { idPregunta: idOpcion } a la lista que
-    // espera el backend: [{ preguntaId, opcionId }, ...]
     const respuestas = Object.entries(respuestasSeleccionadas).map(([preguntaId, opcionId]) => ({
         preguntaId: parseInt(preguntaId, 10),
         opcionId: opcionId
     }));
 
-    // Mostrar la pantalla de carga mientras se calcula el resultado.
     pantallaTest.style.display = "none";
     pantallaCarga.style.display = "flex";
 
     try {
-        const respuesta = await fetch("/api/test/resultado", {
+        const respuestaTest = await fetch("/api/test/resultado", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                usuarioId: sesion.idUsuario,
-                respuestas: respuestas
-            })
+            body: JSON.stringify({ usuarioId: sesion.idUsuario, respuestas: respuestas })
         });
 
-        if (respuesta.ok) {
-            const resultado = await respuesta.json();
-            mostrarResultado(resultado);
-        } else {
-            const textoError = await respuesta.text();
+        if (!respuestaTest.ok) {
+            const textoError = await respuestaTest.text();
             pantallaCarga.style.display = "none";
             pantallaTest.style.display = "block";
-            elementoAviso.textContent = "No se pudo calcular el resultado: " + textoError;
+            elementoAviso.innerHTML = `<div class="alerta error">No se pudo calcular el resultado: ${textoError}</div>`;
+            return;
         }
+
+        const afinidadPorArea = await respuestaTest.json();
+
+        const respuestaCarreras = await fetch("/api/carreras/recomendadas", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ afinidadPorArea: afinidadPorArea })
+        });
+
+        if (!respuestaCarreras.ok) {
+            const textoError = await respuestaCarreras.text();
+            pantallaCarga.style.display = "none";
+            pantallaTest.style.display = "block";
+            elementoAviso.innerHTML = `<div class="alerta error">No se pudieron obtener las carreras recomendadas: ${textoError}</div>`;
+            return;
+        }
+
+        const recomendaciones = await respuestaCarreras.json();
+        localStorage.setItem("carrerasRecomendadas", JSON.stringify(recomendaciones));
+        localStorage.setItem("afinidadPorArea", JSON.stringify(afinidadPorArea));
+
+        const respuestaPerfil = await fetch("/api/perfil/resumen", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ afinidadPorArea: afinidadPorArea })
+        });
+
+        if (!respuestaPerfil.ok) {
+            const textoError = await respuestaPerfil.text();
+            pantallaCarga.style.display = "none";
+            pantallaTest.style.display = "block";
+            elementoAviso.innerHTML = `<div class="alerta error">No se pudo calcular tu perfil: ${textoError}</div>`;
+            return;
+        }
+
+        const perfil = await respuestaPerfil.json();
+        localStorage.setItem("perfilVocacional", JSON.stringify(perfil));
+
+        window.location.href = "perfil.html";
 
     } catch (error) {
         pantallaCarga.style.display = "none";
         pantallaTest.style.display = "block";
-        elementoAviso.textContent = "No se pudo conectar con el servidor.";
+        elementoAviso.innerHTML = `<div class="alerta error">No se pudo conectar con el servidor.</div>`;
     }
 }
 
-// ============================================================
-// MOSTRAR EL RESULTADO FINAL (puntaje por area)
-// ============================================================
-function mostrarResultado(resultado) {
-    pantallaCarga.style.display = "none";
-    pantallaResultado.style.display = "block";
-
-    const lista = document.getElementById("listaResultado");
-    lista.innerHTML = "";
-
-    Object.entries(resultado).forEach(([area, puntaje]) => {
-        const item = document.createElement("li");
-        item.textContent = `${area}: ${puntaje}% de afinidad`;
-        lista.appendChild(item);
-    });
-}
-
-// Arrancar todo al cargar la pagina.
-cargarCuestionario();
+cargarCuestionario();   

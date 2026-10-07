@@ -1,12 +1,10 @@
-// Toma el formulario y evita que la pagina se recargue al enviarlo
-// (comportamiento por defecto de un <form> en HTML).
 document.getElementById("formRegistro").addEventListener("submit", async (evento) => {
     evento.preventDefault();
 
     const correo = document.getElementById("correo").value;
     const contrasena = document.getElementById("contrasena").value;
     const mensajeError = document.getElementById("mensajeError");
-    mensajeError.textContent = "";
+    mensajeError.innerHTML = "";
 
     try {
         const respuesta = await fetch("/api/auth/registro", {
@@ -16,16 +14,13 @@ document.getElementById("formRegistro").addEventListener("submit", async (evento
         });
 
         if (respuesta.ok) {
-            // Registro exitoso: mandamos al usuario a iniciar sesion.
             window.location.href = "login.html";
         } else {
-            // El backend manda el mensaje de error como texto plano
-            // (correo invalido, contraseña invalida, correo ya registrado, etc.)
             const textoError = await respuesta.text();
-            mensajeError.textContent = textoError;
+            mensajeError.innerHTML = `<div class="alerta error">${textoError}</div>`;
         }
 
     } catch (error) {
-        mensajeError.textContent = "No se pudo conectar con el servidor.";
+        mensajeError.innerHTML = `<div class="alerta error">No se pudo conectar con el servidor.</div>`;
     }
 });

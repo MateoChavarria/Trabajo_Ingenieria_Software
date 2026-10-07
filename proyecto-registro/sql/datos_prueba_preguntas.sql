@@ -1,7 +1,10 @@
 -- ============================================================
--- DATOS DE PRUEBA: TEST VOCACIONAL (version ampliada, 45 preguntas)
+-- DATOS DE PRUEBA: TEST VOCACIONAL (version final, 53 preguntas, 8 areas)
 -- Orientador Vocacional UPB
 -- ============================================================
+-- 8 areas (deben coincidir exactamente con area_categoria en la tabla carreras):
+--   ingenieria, salud, administracion, diseño, ciencias_sociales, derecho, educacion, humanidades
+-- (nota historica, ya no aplica tal cual, se deja la linea original abajo por continuidad)
 -- Areas usadas (deben coincidir exactamente con las que usaran
 -- luego para relacionar carreras en la Historia 5):
 --   ingenieria, salud, administracion, diseño, ciencias_sociales, derecho
@@ -57,7 +60,15 @@ insert into preguntas (texto, categoria) values
   ('¿Qué app usarías más si tuvieras que crear una?', 'intereses'),                                              -- 42
   ('¿Qué te gustaría que la tecnología resolviera en el futuro?', 'intereses'),                                  -- 43
   ('¿Qué tipo de decisión se te hace más fácil de tomar?', 'habilidades'),                                       -- 44
-  ('¿Con qué frase te identificas más al pensar en tu futuro laboral?', 'valores');                              -- 45
+  ('¿Con qué frase te identificas más al pensar en tu futuro laboral?', 'valores'),  -- 45
+  ('¿Qué actividad te gustaría hacer en tu tiempo libre entre semana?', 'intereses'),             -- 46
+  ('¿Qué tipo de libro comprarías primero en una librería?', 'intereses'),                        -- 47
+  ('¿Qué rol tomarías en un grupo juvenil o comunitario?', 'valores'),                             -- 48
+  ('¿Qué pregunta te parece más interesante de responder?', 'intereses'),                         -- 49
+  ('¿Qué actividad de voluntariado te llamaría más la atención?', 'valores'),                     -- 50
+  ('¿Qué tema elegirías para escribir un ensayo?', 'habilidades'),                                -- 51
+  ('¿Qué te gustaría lograr como profesional en el futuro?', 'valores'),                          -- 52
+  ('¿Qué actividad disfrutarías más en un intercambio cultural?', 'intereses');                   -- 53
 
 -- ------------------------------------------------------------
 -- OPCIONES DE RESPUESTA 1-15
@@ -297,3 +308,70 @@ insert into opciones_respuesta (pregunta_id, texto, area, peso) values
   (45, '"Quiero cuidar y sanar a las personas"', 'salud', 3),
   (45, '"Quiero liderar organizaciones exitosas"', 'administracion', 2),
   (45, '"Quiero defender lo que es justo"', 'derecho', 2);
+
+-- ------------------------------------------------------------
+-- OPCIONES NUEVAS en preguntas YA EXISTENTES, para dar cobertura
+-- real a 'educacion' y 'humanidades' (antes no tenian ninguna)
+-- ------------------------------------------------------------
+insert into opciones_respuesta (pregunta_id, texto, area, peso) values
+  (1, 'Enseñarle a alguien algo hasta que lo entienda', 'educacion', 3),
+  (4, 'El que explica y ayuda a los demás a entender la tarea', 'educacion', 2),
+  (9, 'Lengua castellana o literatura', 'educacion', 2),
+  (12, 'Cómo se enseña y se aprende mejor', 'educacion', 3),
+  (20, 'Pedagogía o técnicas de enseñanza', 'educacion', 2),
+  (26, 'Explicar temas complejos de forma simple', 'educacion', 2),
+  (33, 'Explicarle a mis compañeros lo que no entendieron', 'educacion', 2),
+  (39, 'Sobre cómo aprender mejor algo', 'educacion', 2);
+
+insert into opciones_respuesta (pregunta_id, texto, area, peso) values
+  (3, 'Ensayos de filosofía o pensamiento crítico', 'humanidades', 2),
+  (7, 'Me gusta reflexionar sobre el sentido de las cosas', 'humanidades', 2),
+  (9, 'Filosofía', 'humanidades', 2),
+  (16, 'Uno sobre filosofía o religión', 'humanidades', 2),
+  (31, 'Contenido de reflexión o filosofía', 'humanidades', 2),
+  (37, 'Reflexionando y debatiendo ideas abstractas', 'humanidades', 2),
+  (38, 'Un conversatorio filosófico o literario', 'humanidades', 2),
+  (45, '"Quiero dedicarme a pensar y enseñar"', 'humanidades', 2);
+
+-- ------------------------------------------------------------
+-- OPCIONES de las preguntas NUEVAS 46-53
+-- ------------------------------------------------------------
+insert into opciones_respuesta (pregunta_id, texto, area, peso) values
+  (46, 'Preparar una clase o taller para otros', 'educacion', 3),
+  (46, 'Leer sobre un tema filosófico o espiritual', 'humanidades', 2),
+  (46, 'Resolver un problema técnico como hobby', 'ingenieria', 2);
+
+insert into opciones_respuesta (pregunta_id, texto, area, peso) values
+  (47, 'Uno sobre cómo enseñar o formar a otros', 'educacion', 2),
+  (47, 'Uno de filosofía, ética o teología', 'humanidades', 3),
+  (47, 'Uno sobre salud y bienestar', 'salud', 2);
+
+insert into opciones_respuesta (pregunta_id, texto, area, peso) values
+  (48, 'El que guía y forma a los más jóvenes', 'educacion', 3),
+  (48, 'El que reflexiona sobre los valores del grupo', 'humanidades', 2),
+  (48, 'El que organiza las actividades y recursos', 'administracion', 2);
+
+insert into opciones_respuesta (pregunta_id, texto, area, peso) values
+  (49, '¿Cómo aprendemos mejor como seres humanos?', 'educacion', 3),
+  (49, '¿Cuál es el sentido de la vida o la existencia?', 'humanidades', 3),
+  (49, '¿Cómo se diseña algo realmente útil?', 'diseño', 2);
+
+insert into opciones_respuesta (pregunta_id, texto, area, peso) values
+  (50, 'Dar clases de refuerzo a niños', 'educacion', 3),
+  (50, 'Acompañar espiritualmente a personas en crisis', 'humanidades', 2),
+  (50, 'Hacer brigadas de salud comunitaria', 'salud', 2);
+
+insert into opciones_respuesta (pregunta_id, texto, area, peso) values
+  (51, 'Cómo mejorar la educación en mi país', 'educacion', 3),
+  (51, 'Un dilema ético o filosófico actual', 'humanidades', 3),
+  (51, 'Un caso legal controvertido', 'derecho', 2);
+
+insert into opciones_respuesta (pregunta_id, texto, area, peso) values
+  (52, 'Formar a las próximas generaciones', 'educacion', 3),
+  (52, 'Ayudar a las personas a encontrar sentido y propósito', 'humanidades', 2),
+  (52, 'Construir soluciones tecnológicas', 'ingenieria', 2);
+
+insert into opciones_respuesta (pregunta_id, texto, area, peso) values
+  (53, 'Dar un taller o clase a estudiantes locales', 'educacion', 2),
+  (53, 'Participar en debates filosóficos o religiosos', 'humanidades', 2),
+  (53, 'Conocer cómo funciona su sistema de salud', 'salud', 2);

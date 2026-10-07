@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <title>Iniciar sesión - Orientador Vocacional UPB</title>
-    <style>
-        body { font-family: sans-serif; max-width: 400px; margin: 60px auto; }
-        input { width: 100%; padding: 8px; margin: 6px 0; box-sizing: border-box; }
-        button { width: 100%; padding: 10px; margin-top: 10px; }
-        .error { color: red; min-height: 20px; }
-    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/estilo.css">
 </head>
 <body>
+<header class="nav" id="nav"></header>
+<div class="form-card">
     <h2>Iniciar sesión</h2>
+    <p class="sub">Entra para hacer el test o ver tus resultados.</p>
 
     <form id="formLogin">
         <label for="correo">Correo electrónico</label>
@@ -20,13 +21,15 @@
         <label for="contrasena">Contraseña</label>
         <input type="password" id="contrasena" required>
 
-        <p class="error" id="mensajeError"></p>
+        <div id="mensajeError"></div>
 
-        <button type="submit">Iniciar sesión</button>
+        <button type="submit" class="btn block" style="margin-top:20px">Iniciar sesión</button>
     </form>
 
-    <p>¿No tienes cuenta? <a href="registro.html">Regístrate</a></p>
-
-    <script src="js/login.js"></script>
+    <p style="margin-top:18px;text-align:center;color:#5b6190">¿No tienes cuenta? <a href="registro.html" style="color:var(--blue);font-weight:700">Regístrate</a></p>
+</div>
+<script src="js/sesion.js"></script>
+<script>pintarNav();</script>
+<script src="js/login.js"></script>
 </body>
 </html>
