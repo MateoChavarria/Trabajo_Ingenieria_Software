@@ -4,7 +4,7 @@ document.getElementById("formLogin").addEventListener("submit", async (evento) =
     const correo = document.getElementById("correo").value;
     const contrasena = document.getElementById("contrasena").value;
     const mensajeError = document.getElementById("mensajeError");
-    mensajeError.innerHTML = "";
+    mensajeError.replaceChildren();
 
     try {
         const respuesta = await fetch("/api/auth/login", {
@@ -18,17 +18,16 @@ document.getElementById("formLogin").addEventListener("submit", async (evento) =
             localStorage.setItem("sesion", JSON.stringify(sesion));
 
             // Si llegamos aqui porque requerirSesion() nos mando desde
-            // otra pagina (test, perfil, carreras), volvemos a ella en
-            // vez de ir siempre al test por defecto.
+            // otra pagina, volvemos a ella; solo se aceptan paginas
+            // propias de la lista blanca (evita redirecciones abiertas
+            // y URLs "javascript:").
             const parametros = new URLSearchParams(window.location.search);
-            const volver = parametros.get("volver");
-            window.location.href = volver ? volver : "test.html";
+            window.location.href = destinoSeguroDespuesDeLogin(parametros.get("volver"));
         } else {
-            const textoError = await respuesta.text();
-            mensajeError.innerHTML = `<div class="alerta error">${textoError}</div>`;
+            mostrarAlerta(mensajeError, "error", await respuesta.text());
         }
 
     } catch (error) {
-        mensajeError.innerHTML = `<div class="alerta error">No se pudo conectar con el servidor.</div>`;
+        mostrarAlerta(mensajeError, "error", "No se pudo conectar con el servidor.");
     }
 });

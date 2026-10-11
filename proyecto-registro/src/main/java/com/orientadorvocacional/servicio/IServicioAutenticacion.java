@@ -27,7 +27,7 @@ public interface IServicioAutenticacion {
     String registrar(Usuario usuario)
             throws CorreoYaRegistradoException, RegistroFallidoException;
     
-        /**
+    /**
      * Inicia sesión con un correo y contraseña ya existentes.
      *
      * @param correo     correo del usuario
@@ -35,5 +35,15 @@ public interface IServicioAutenticacion {
      * @return la sesión activa, con su token y fecha de expiración
      */
     SesionUsuario iniciarSesion(String correo, String contrasena)
+            throws CredencialesInvalidasException, InicioSesionFallidoException;
+
+    /**
+     * Verifica con el proveedor que el token de acceso sea autentico y
+     * no haya expirado.
+     *
+     * @param tokenAcceso token recibido en la cabecera Authorization
+     * @return el id del usuario dueño del token
+     */
+    String validarToken(String tokenAcceso)
             throws CredencialesInvalidasException, InicioSesionFallidoException;
 }

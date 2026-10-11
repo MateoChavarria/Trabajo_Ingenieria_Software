@@ -3,3 +3,9 @@ target/
 src/main/resources/application.properties
 .idea/
 *.iml
+src/main/resources/application-*.properties
+!src/main/resources/application.properties.example
+.env
+*.env
+*.pem
+*.key

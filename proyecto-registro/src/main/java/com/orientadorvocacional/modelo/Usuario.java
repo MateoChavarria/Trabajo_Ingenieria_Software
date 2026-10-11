@@ -23,7 +23,13 @@ import java.util.regex.Pattern;
 public class Usuario {
 
     private static final Pattern PATRON_CORREO =
-            Pattern.compile("^[\\w.+-]+@[\\w-]+\\.[a-zA-Z]{2,}$");
+            Pattern.compile("^[\\w.+-]+@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*\\.[A-Za-z]{2,}$");
+
+    /** Limite del estandar (RFC 5321) para una direccion de correo. */
+    public static final int LONGITUD_MAXIMA_CORREO = 254;
+
+    /** bcrypt (usado por Supabase Auth) solo considera los primeros 72 bytes. */
+    public static final int LONGITUD_MAXIMA_CONTRASENA = 72;
 
     private String correo;
     private String contrasena;
@@ -47,6 +53,9 @@ public class Usuario {
             throw new CorreoInvalidoException("El correo no puede estar vacío.");
         }
         String correoNormalizado = correo.trim().toLowerCase();
+        if (correoNormalizado.length() > LONGITUD_MAXIMA_CORREO) {
+            throw new CorreoInvalidoException("El correo es demasiado largo.");
+        }
         if (!PATRON_CORREO.matcher(correoNormalizado).matches()) {
             throw new CorreoInvalidoException("El correo no tiene un formato válido.");
         }
@@ -68,6 +77,10 @@ public class Usuario {
         if (contrasena == null || contrasena.length() < 8) {
             throw new ContrasenaInvalidaException(
                     "La contraseña debe tener al menos 8 caracteres.");
+        }
+        if (contrasena.getBytes(java.nio.charset.StandardCharsets.UTF_8).length > LONGITUD_MAXIMA_CONTRASENA) {
+            throw new ContrasenaInvalidaException(
+                    "La contraseña no puede superar los 72 caracteres.");
         }
         if (contrasena.chars().noneMatch(Character::isUpperCase)) {
             throw new ContrasenaInvalidaException(

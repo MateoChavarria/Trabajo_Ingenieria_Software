@@ -47,8 +47,8 @@ function mostrarPregunta(indice) {
     const pregunta = preguntas[indice];
 
     elementoPregunta.textContent = `${indice + 1}/${preguntas.length} — ${pregunta.texto}`;
-    elementoAviso.innerHTML = "";
-    elementoOpciones.innerHTML = "";
+    elementoAviso.replaceChildren();
+    elementoOpciones.replaceChildren();
 
     const opcionYaElegida = respuestasSeleccionadas[pregunta.id];
 
@@ -97,7 +97,7 @@ botonSiguiente.addEventListener("click", async () => {
     const idOpcionElegida = obtenerOpcionSeleccionada();
 
     if (idOpcionElegida === null) {
-        elementoAviso.innerHTML = `<div class="alerta aviso">Debes seleccionar una opción para continuar.</div>`;
+        mostrarAlerta(elementoAviso, "aviso", "Debes seleccionar una opción para continuar.");
         return;
     }
 
@@ -117,7 +117,7 @@ botonSiguiente.addEventListener("click", async () => {
 async function enviarRespuestasYMostrarResultado() {
     const sesion = obtenerSesion();
     if (!sesion) {
-        elementoAviso.innerHTML = `<div class="alerta error">Tu sesión expiró. Vuelve a iniciar sesión.</div>`;
+        mostrarAlerta(elementoAviso, "error", "Tu sesión expiró. Vuelve a iniciar sesión.");
         return;
     }
 
@@ -130,23 +130,23 @@ async function enviarRespuestasYMostrarResultado() {
     pantallaCarga.style.display = "flex";
 
     try {
-        const respuestaTest = await fetch("/api/test/resultado", {
+        const respuestaTest = await fetchAutenticado("/api/test/resultado", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ usuarioId: sesion.idUsuario, respuestas: respuestas })
+            body: JSON.stringify({ respuestas: respuestas })
         });
 
         if (!respuestaTest.ok) {
             const textoError = await respuestaTest.text();
             pantallaCarga.style.display = "none";
             pantallaTest.style.display = "block";
-            elementoAviso.innerHTML = `<div class="alerta error">No se pudo calcular el resultado: ${textoError}</div>`;
+            mostrarAlerta(elementoAviso, "error", "No se pudo calcular el resultado: " + textoError);
             return;
         }
 
         const afinidadPorArea = await respuestaTest.json();
 
-        const respuestaCarreras = await fetch("/api/carreras/recomendadas", {
+        const respuestaCarreras = await fetchAutenticado("/api/carreras/recomendadas", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ afinidadPorArea: afinidadPorArea })
@@ -156,7 +156,7 @@ async function enviarRespuestasYMostrarResultado() {
             const textoError = await respuestaCarreras.text();
             pantallaCarga.style.display = "none";
             pantallaTest.style.display = "block";
-            elementoAviso.innerHTML = `<div class="alerta error">No se pudieron obtener las carreras recomendadas: ${textoError}</div>`;
+            mostrarAlerta(elementoAviso, "error", "No se pudieron obtener las carreras recomendadas: " + textoError);
             return;
         }
 
@@ -164,7 +164,7 @@ async function enviarRespuestasYMostrarResultado() {
         localStorage.setItem("carrerasRecomendadas", JSON.stringify(recomendaciones));
         localStorage.setItem("afinidadPorArea", JSON.stringify(afinidadPorArea));
 
-        const respuestaPerfil = await fetch("/api/perfil/resumen", {
+        const respuestaPerfil = await fetchAutenticado("/api/perfil/resumen", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ afinidadPorArea: afinidadPorArea })
@@ -174,7 +174,7 @@ async function enviarRespuestasYMostrarResultado() {
             const textoError = await respuestaPerfil.text();
             pantallaCarga.style.display = "none";
             pantallaTest.style.display = "block";
-            elementoAviso.innerHTML = `<div class="alerta error">No se pudo calcular tu perfil: ${textoError}</div>`;
+            mostrarAlerta(elementoAviso, "error", "No se pudo calcular tu perfil: " + textoError);
             return;
         }
 
@@ -186,8 +186,8 @@ async function enviarRespuestasYMostrarResultado() {
     } catch (error) {
         pantallaCarga.style.display = "none";
         pantallaTest.style.display = "block";
-        elementoAviso.innerHTML = `<div class="alerta error">No se pudo conectar con el servidor.</div>`;
+        mostrarAlerta(elementoAviso, "error", "No se pudo conectar con el servidor.");
     }
 }
 
-cargarCuestionario();   
+cargarCuestionario();

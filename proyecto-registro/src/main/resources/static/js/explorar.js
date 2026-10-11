@@ -8,16 +8,21 @@ async function cargarCarreras() {
         }
         const carreras = await respuesta.json();
 
-        contenedor.innerHTML = "";
+        contenedor.replaceChildren();
         carreras.forEach((carrera) => {
-            const tarjeta = document.createElement("div");
-            tarjeta.className = "card hoverable";
-            tarjeta.innerHTML = `
-                <span class="badge-area">${carrera.areaCategoria}</span>
-                <h3>${carrera.nombre}</h3>
-                <p class="motivo">${carrera.campoLaboral}</p>
-                <a class="btn outline" href="carrera-detalle.html?id=${carrera.id}" style="margin-top:12px;display:inline-block">Ver detalle</a>
-            `;
+            const tarjeta = crearElemento("div", "card hoverable");
+
+            const enlace = crearElemento("a", "btn outline", "Ver detalle");
+            enlace.href = enlaceDetalleCarrera(carrera.id);
+            enlace.style.marginTop = "12px";
+            enlace.style.display = "inline-block";
+
+            tarjeta.append(
+                crearElemento("span", "badge-area", carrera.areaCategoria),
+                crearElemento("h3", null, carrera.nombre),
+                crearElemento("p", "motivo", carrera.campoLaboral),
+                enlace
+            );
             contenedor.appendChild(tarjeta);
         });
 

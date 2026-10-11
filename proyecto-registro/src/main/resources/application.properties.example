@@ -1,0 +1,57 @@
+# ============================================================
+# PLANTILLA DE CONFIGURACION
+# Copiar este archivo como application.properties (ignorado por git).
+# Las credenciales se leen de VARIABLES DE ENTORNO: nunca escribir
+# claves o contraseñas reales en archivos que se suban al repositorio.
+#
+#   export SUPABASE_URL=https://<proyecto>.supabase.co
+#   export SUPABASE_ANON_KEY=sb_publishable_...
+#   export DB_URL='jdbc:postgresql://aws-0-<region>.pooler.supabase.com:5432/postgres?sslmode=require'
+#   export DB_USERNAME=postgres.<proyecto>
+#   export DB_PASSWORD=...
+# ============================================================
+server.port=8080
+
+# Nunca devolver trazas ni mensajes internos de excepciones al cliente.
+server.error.include-stacktrace=never
+server.error.include-message=never
+server.error.include-binding-errors=never
+server.error.whitelabel.enabled=false
+
+# Si se despliega detras de un proxy HTTPS (Render, Railway, Nginx...),
+# esto permite detectar https y activar HSTS.
+server.forward-headers-strategy=framework
+
+# ============================================================
+# SUPABASE AUTH (registro, inicio de sesion y validacion de tokens)
+# ============================================================
+supabase.url=${SUPABASE_URL}
+supabase.anonKey=${SUPABASE_ANON_KEY}
+
+# ============================================================
+# CONEXION JDBC A POSTGRESQL (Connection Pooler de Supabase)
+# sslmode=require obliga a cifrar la conexion con TLS.
+# ============================================================
+spring.datasource.url=${DB_URL}
+spring.datasource.username=${DB_USERNAME}
+spring.datasource.password=${DB_PASSWORD}
+spring.datasource.driver-class-name=org.postgresql.Driver
+spring.datasource.hikari.maximum-pool-size=3
+
+# ============================================================
+# JPA / HIBERNATE
+# ============================================================
+spring.jpa.hibernate.ddl-auto=validate
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.open-in-view=false
+# En "true" solo para depurar localmente.
+spring.jpa.show-sql=false
+
+# ============================================================
+# SEGURIDAD DE LA APLICACION
+# ============================================================
+# Origenes externos permitidos por CORS (separados por coma). Vacio =
+# solo el mismo origen (el frontend se sirve desde este servidor).
+app.cors.allowed-origins=
+# Intentos de registro/login permitidos por IP por minuto.
+app.seguridad.intentos-auth-por-minuto=10

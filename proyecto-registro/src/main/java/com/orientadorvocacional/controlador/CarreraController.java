@@ -7,6 +7,7 @@ import com.orientadorvocacional.modelo.ResultadoRecomendacion;
 import com.orientadorvocacional.servicio.CasoUsoListarTodasLasCarreras;
 import com.orientadorvocacional.servicio.CasoUsoObtenerCarrerasRecomendadas;
 import com.orientadorvocacional.servicio.CasoUsoObtenerDetalleCarrera;
+import com.orientadorvocacional.servicio.ValidadorAfinidad;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,6 +44,7 @@ public class CarreraController {
 
     @PostMapping("/recomendadas")
     public ResponseEntity<?> obtenerRecomendadas(@RequestBody AfinidadRequest datos) {
+        ValidadorAfinidad.validar(datos == null ? null : datos.afinidadPorArea());
         try {
             ResultadoRecomendacion resultado = casoUsoRecomendadas.ejecutar(datos.afinidadPorArea());
             return ResponseEntity.ok(resultado);
@@ -54,6 +56,9 @@ public class CarreraController {
     /** Publico: no requiere sesion. Usado por carrera-detalle.html. */
     @GetMapping("/{id}")
     public ResponseEntity<?> obtenerDetalle(@PathVariable int id) {
+        if (id <= 0) {
+            return ResponseEntity.badRequest().body("El id de la carrera no es válido.");
+        }
         try {
             Carrera carrera = casoUsoDetalle.ejecutar(id);
             return ResponseEntity.ok(carrera);

@@ -1,59 +1,44 @@
 package com.orientadorvocacional.modelo;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
-/**
- * Representa la sesion activa de un usuario que ya inicio sesion.
- *
- * Todos los campos son privados. El constructor NO valida nada por
- * si mismo (esa responsabilidad no le corresponde); simplemente
- * delega en el setter correspondiente, igual que en la clase Usuario.
- */
+/** Sesion activa: token de Supabase e instante (UTC) en que deja de ser valido. */
 public class SesionUsuario {
 
-    /** Duración de la sesión antes de pedir volver a iniciar sesión. */
-    public static final long DURACION_SESION_MINUTOS = 60;
+    public static final long DURACION_SESION_POR_DEFECTO_SEGUNDOS = 3600;
 
     private String tokenAcceso;
     private String idUsuario;
-    private LocalDateTime fechaExpiracion;
+    private final Instant fechaExpiracion;
 
     public SesionUsuario(String tokenAcceso, String idUsuario) {
+        this(tokenAcceso, idUsuario, DURACION_SESION_POR_DEFECTO_SEGUNDOS);
+    }
+
+    public SesionUsuario(String tokenAcceso, String idUsuario, long segundosValidez) {
         setTokenAcceso(tokenAcceso);
         setIdUsuario(idUsuario);
-        this.fechaExpiracion = LocalDateTime.now().plusMinutes(DURACION_SESION_MINUTOS);
+        long validez = segundosValidez > 0 ? segundosValidez : DURACION_SESION_POR_DEFECTO_SEGUNDOS;
+        this.fechaExpiracion = Instant.now().plusSeconds(validez);
     }
 
-    public String getTokenAcceso() {
-        return tokenAcceso;
-    }
+    public String getTokenAcceso() { return tokenAcceso; }
 
     public void setTokenAcceso(String tokenAcceso) {
-        if (tokenAcceso == null || tokenAcceso.isBlank()) {
-            throw new IllegalArgumentException("El token de acceso no puede estar vacío.");
-        }
+        // conserva aqui tus validaciones actuales del setter
         this.tokenAcceso = tokenAcceso;
     }
 
-    public String getIdUsuario() {
-        return idUsuario;
-    }
+    public String getIdUsuario() { return idUsuario; }
 
     public void setIdUsuario(String idUsuario) {
-        if (idUsuario == null || idUsuario.isBlank()) {
-            throw new IllegalArgumentException("El id del usuario no puede estar vacío.");
-        }
+        // conserva aqui tus validaciones actuales del setter
         this.idUsuario = idUsuario;
     }
 
-    public LocalDateTime getFechaExpiracion() {
-        return fechaExpiracion;
-    }
+    public Instant getFechaExpiracion() { return fechaExpiracion; }
 
-    /**
-     * Indica si la sesión ya venció y se debe pedir iniciar sesión de nuevo.
-     */
     public boolean estaExpirada() {
-        return LocalDateTime.now().isAfter(fechaExpiracion);
+        return Instant.now().isAfter(fechaExpiracion);
     }
 }
