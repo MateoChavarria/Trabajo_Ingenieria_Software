@@ -35,6 +35,9 @@ public class CarreraEntity {
     @Column(name = "tarifa_semestre")
     private BigDecimal tarifaSemestre;
 
+        @Column(name = "universidad_id")
+    private Integer universidadId;
+
     protected CarreraEntity() {
     }
 
@@ -64,5 +67,9 @@ public class CarreraEntity {
 
     public BigDecimal getTarifaSemestre() {
         return tarifaSemestre;
+    }
+
+    public Integer getUniversidadId() {
+        return universidadId;
     }
 }

@@ -102,6 +102,7 @@ function pintarNav() {
             <a class="logo" href="index.html"><i><b></b><b></b><b></b><b></b></i>Orientador UPB</a>
             <nav class="nav-links">
                 <a href="explorar.html">Explorar carreras</a>
+                <a href="universidades.html">Universidades</a>
                 ${sesion ? `<a href="test.html">Hacer el test</a>` : ""}
                 ${linkCuenta}
             </nav>

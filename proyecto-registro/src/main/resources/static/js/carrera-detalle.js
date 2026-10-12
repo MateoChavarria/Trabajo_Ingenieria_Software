@@ -22,6 +22,11 @@ if (!idEsValido) {
     cargarSoloDetalle();
 }
 
+// El plan de estudios se pide aparte: solo existe para carreras de la UPB Medellín.
+if (idEsValido) {
+    cargarPensum();
+}
+
 function mostrarConAfinidad(item) {
     mostrarDatosBase(item.carrera);
 
@@ -61,3 +66,86 @@ function mostrarDatosBase(carrera) {
 
     document.getElementById("datosExtra").textContent = `Duración: ${duracion} · Tarifa: ${tarifa}`;
 }
+
+async function cargarPensum() {
+    const contenedor = document.getElementById("contenidoPensum");
+    try {
+        const respuesta = await fetch(`/api/carreras/${encodeURIComponent(idCarrera)}/pensum`);
+
+        if (!respuesta.ok) {
+            // El backend explica el motivo (por ejemplo, "solo disponible para carreras de la UPB Medellín").
+            const mensaje = await respuesta.text();
+            contenedor.textContent = mensaje || "No se pudo cargar el plan de estudios.";
+            return;
+        }
+
+        mostrarPensum(contenedor, await respuesta.json());
+
+    } catch (error) {
+        contenedor.textContent = "No se pudo conectar con el servidor.";
+    }
+}
+
+function mostrarPensum(contenedor, pensum) {
+    contenedor.replaceChildren();
+
+    if (!Array.isArray(pensum.semestres) || pensum.semestres.length === 0) {
+        contenedor.textContent = "Esta carrera aún no tiene plan de estudios cargado.";
+        return;
+    }
+
+    contenedor.appendChild(crearElemento(
+        "p", "pensum-resumen",
+        `${pensum.semestres.length} semestres · ${pensum.creditosTotales} créditos en total`
+    ));
+
+    pensum.semestres.forEach((semestre, indice) => {
+        contenedor.appendChild(crearBloqueSemestre(semestre, indice === 0));
+    });
+}
+
+function crearBloqueSemestre(semestre, abierto) {
+    const bloque = crearElemento("details", "semestre-bloque");
+    bloque.open = abierto;
+
+    bloque.append(
+        crearElemento("summary", null, `Semestre ${semestre.numero} · ${semestre.enfoquePrincipal}`),
+        crearElemento("p", "descripcion-semestre", semestre.descripcion),
+        crearTablaMaterias(semestre)
+    );
+    return bloque;
+}
+
+function crearTablaMaterias(semestre) {
+    const tabla = crearElemento("table", "tabla-pensum");
+
+    const encabezado = crearElemento("tr");
+    encabezado.append(
+        crearElemento("th", null, "Materia"),
+        crearElemento("th", "num", "Créditos"),
+        crearElemento("th", null, "Enfoque")
+    );
+    tabla.appendChild(crearElemento("thead")).appendChild(encabezado);
+
+    const cuerpo = crearElemento("tbody");
+    semestre.materias.forEach((materia) => {
+        const fila = crearElemento("tr");
+        fila.append(
+            crearElemento("td", null, materia.nombre),
+            crearElemento("td", "num", materia.creditos),
+            crearElemento("td", null, materia.enfoqueTematico)
+        );
+        cuerpo.appendChild(fila);
+    });
+    tabla.appendChild(cuerpo);
+
+    const total = crearElemento("tr");
+    total.append(
+        crearElemento("td", null, "Total del semestre"),
+        crearElemento("td", "num", semestre.creditosTotales),
+        crearElemento("td")
+    );
+    tabla.appendChild(crearElemento("tfoot")).appendChild(total);
+
+    return tabla;
+}   
