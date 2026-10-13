@@ -3,6 +3,7 @@ package com.orientadorvocacional.controlador;
 import com.orientadorvocacional.excepciones.CuestionarioFallidoException;
 import com.orientadorvocacional.excepciones.ResultadoTestFallidoException;
 import com.orientadorvocacional.modelo.Pregunta;
+import com.orientadorvocacional.seguridad.InterceptorAutenticacion;
 import com.orientadorvocacional.servicio.CasoUsoCalcularYGuardarResultadoTest;
 import com.orientadorvocacional.servicio.CasoUsoObtenerCuestionario;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,9 @@ import java.util.Map;
 @RequestMapping("/api/test")
 public class TestController {
 
+    /** Limite defensivo: el cuestionario real tiene ~53 preguntas. */
+    static final int MAXIMO_RESPUESTAS = 500;
+
     private final CasoUsoObtenerCuestionario casoUsoObtenerCuestionario;
     private final CasoUsoCalcularYGuardarResultadoTest casoUsoCalcularResultado;
 
@@ -34,8 +38,11 @@ public class TestController {
     public record RespuestaDTO(int preguntaId, int opcionId) {
     }
 
-    /** Cuerpo completo que manda el frontend al terminar el test. */
-    public record EnviarRespuestasRequest(String usuarioId, List<RespuestaDTO> respuestas) {
+    /**
+     * Cuerpo completo que manda el frontend al terminar el test. El id
+     * del usuario NO viaja aqui: se toma del token de sesion validado.
+     */
+    public record EnviarRespuestasRequest(List<RespuestaDTO> respuestas) {
     }
 
     @GetMapping("/preguntas")
@@ -50,18 +57,30 @@ public class TestController {
     }
 
     @PostMapping("/resultado")
-    public ResponseEntity<?> enviarRespuestas(@RequestBody EnviarRespuestasRequest datos) {
+    public ResponseEntity<?> enviarRespuestas(
+            @RequestAttribute(InterceptorAutenticacion.ATRIBUTO_USUARIO_ID) String usuarioId,
+            @RequestBody EnviarRespuestasRequest datos) {
+        if (datos == null || datos.respuestas() == null || datos.respuestas().isEmpty()) {
+            return ResponseEntity.badRequest().body("Debes responder el cuestionario.");
+        }
+        if (datos.respuestas().size() > MAXIMO_RESPUESTAS) {
+            return ResponseEntity.badRequest().body("Se recibieron demasiadas respuestas.");
+        }
+
         try {
             // Convertimos la lista de RespuestaDTO que llega del frontend
             // a un mapa (preguntaId -> opcionId), que es el formato que
             // espera el caso de uso.
             Map<Integer, Integer> mapaRespuestas = new HashMap<>();
             for (RespuestaDTO respuesta : datos.respuestas()) {
+                if (respuesta == null) {
+                    return ResponseEntity.badRequest().body("Hay respuestas vacías.");
+                }
                 mapaRespuestas.put(respuesta.preguntaId(), respuesta.opcionId());
             }
 
             Map<String, Integer> resultado =
-                    casoUsoCalcularResultado.ejecutar(datos.usuarioId(), mapaRespuestas);
+                    casoUsoCalcularResultado.ejecutar(usuarioId, mapaRespuestas);
 
             return ResponseEntity.ok(resultado);
 

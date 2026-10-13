@@ -3,35 +3,43 @@
 // abre directo (por ejemplo, un link compartido), consultamos al
 // backend y mostramos solo los datos de la carrera, sin afinidad.
 
+document.getElementById("linkVolver").addEventListener("click", (evento) => {
+    evento.preventDefault();
+    history.back();
+});
+
 const parametros = new URLSearchParams(window.location.search);
 const idCarrera = parametros.get("id");
+const idEsValido = /^[1-9][0-9]{0,8}$/.test(idCarrera || "");
 
-const datosSeleccionados = localStorage.getItem("carreraSeleccionada");
+const itemSeleccionado = leerJsonLocal("carreraSeleccionada");
 
-if (datosSeleccionados) {
-    const item = JSON.parse(datosSeleccionados);
-
-    if (String(item.carrera.id) === idCarrera) {
-        mostrarConAfinidad(item);
-    } else {
-        cargarSoloDetalle();
-    }
+if (!idEsValido) {
+    document.getElementById("nombreCarrera").textContent = "No se encontró la carrera.";
+} else if (itemSeleccionado && itemSeleccionado.carrera && String(itemSeleccionado.carrera.id) === idCarrera) {
+    mostrarConAfinidad(itemSeleccionado);
 } else {
     cargarSoloDetalle();
+}
+
+// El plan de estudios se pide aparte: solo existe para carreras de la UPB Medellín.
+if (idEsValido) {
+    cargarPensum();
 }
 
 function mostrarConAfinidad(item) {
     mostrarDatosBase(item.carrera);
 
+    const afinidad = porcentajeSeguro(item.afinidad);
     document.getElementById("bloqueAfinidad").style.display = "block";
-    document.getElementById("textoAfinidad").textContent = item.afinidad + "%";
-    document.getElementById("barraAfinidad").style.width = item.afinidad + "%";
+    document.getElementById("textoAfinidad").textContent = afinidad + "%";
+    document.getElementById("barraAfinidad").style.width = afinidad + "%";
     document.getElementById("motivoRecomendacion").textContent = item.motivo;
 }
 
 async function cargarSoloDetalle() {
     try {
-        const respuesta = await fetch(`/api/carreras/${idCarrera}`);
+        const respuesta = await fetch(`/api/carreras/${encodeURIComponent(idCarrera)}`);
 
         if (!respuesta.ok) {
             document.getElementById("nombreCarrera").textContent = "No se encontró la carrera.";
@@ -57,4 +65,141 @@ function mostrarDatosBase(carrera) {
         : "No especificada";
 
     document.getElementById("datosExtra").textContent = `Duración: ${duracion} · Tarifa: ${tarifa}`;
+}
+
+async function cargarPensum() {
+    const contenedor = document.getElementById("contenidoPensum");
+    try {
+        const respuesta = await fetch(`/api/carreras/${encodeURIComponent(idCarrera)}/pensum`);
+
+        if (!respuesta.ok) {
+            // El backend explica el motivo (por ejemplo, "solo disponible para carreras de la UPB Medellín").
+            const mensaje = await respuesta.text();
+            contenedor.textContent = mensaje || "No se pudo cargar el plan de estudios.";
+            return;
+        }
+
+        mostrarPensum(contenedor, await respuesta.json());
+
+    } catch (error) {
+        contenedor.textContent = "No se pudo conectar con el servidor.";
+    }
+}
+
+function mostrarPensum(contenedor, pensum) {
+    contenedor.replaceChildren();
+
+    if (!Array.isArray(pensum.semestres) || pensum.semestres.length === 0) {
+        contenedor.textContent = "Esta carrera aún no tiene plan de estudios cargado.";
+        return;
+    }
+
+    contenedor.appendChild(crearElemento(
+        "p", "pensum-resumen",
+        `${pensum.semestres.length} semestres · ${pensum.creditosTotales} créditos en total`
+    ));
+
+    pensum.semestres.forEach((semestre, indice) => {
+        contenedor.appendChild(crearBloqueSemestre(semestre, indice === 0));
+    });
+}
+
+function crearBloqueSemestre(semestre, abierto) {
+    const bloque = crearElemento("details", "semestre-bloque");
+    bloque.open = abierto;
+
+    bloque.append(
+        crearElemento("summary", null, `Semestre ${semestre.numero} · ${semestre.enfoquePrincipal}`),
+        crearElemento("p", "descripcion-semestre", semestre.descripcion),
+        crearTablaMaterias(semestre)
+    );
+    return bloque;
+}
+
+function crearTablaMaterias(semestre) {
+    const tabla = crearElemento("table", "tabla-pensum");
+
+    const encabezado = crearElemento("tr");
+    encabezado.append(
+        crearElemento("th", null, "Materia"),
+        crearElemento("th", "num", "Créditos"),
+        crearElemento("th", null, "Enfoque")
+    );
+    tabla.appendChild(crearElemento("thead")).appendChild(encabezado);
+
+    const cuerpo = crearElemento("tbody");
+    semestre.materias.forEach((materia) => {
+        const fila = crearElemento("tr", "materia-fila");
+
+        // El nombre va dentro de un botón: así se puede abrir también con el teclado.
+        const botonNombre = crearElemento("button", "materia-boton", materia.nombre);
+        botonNombre.type = "button";
+        const celdaNombre = crearElemento("td");
+        celdaNombre.appendChild(botonNombre);
+
+        fila.append(
+            celdaNombre,
+            crearElemento("td", "num", materia.creditos),
+            crearElemento("td", null, materia.enfoqueTematico)
+        );
+        fila.addEventListener("click", () => mostrarDetalleMateria(materia, semestre));
+        cuerpo.appendChild(fila);
+    });
+    tabla.appendChild(cuerpo);
+
+    const total = crearElemento("tr");
+    total.append(
+        crearElemento("td", null, "Total del semestre"),
+        crearElemento("td", "num", semestre.creditosTotales),
+        crearElemento("td")
+    );
+    tabla.appendChild(crearElemento("tfoot")).appendChild(total);
+
+    return tabla;
+}   
+
+
+/** Crea una sola vez la ventana emergente donde se muestra el detalle de una materia. */
+function obtenerDialogoMateria() {
+    let dialogo = document.getElementById("dialogoMateria");
+    if (!dialogo) {
+        dialogo = crearElemento("dialog", "dialogo-materia");
+        dialogo.id = "dialogoMateria";
+        // Un clic en el fondo oscuro (fuera de la tarjeta) cierra la ventana.
+        dialogo.addEventListener("click", (evento) => {
+            if (evento.target === dialogo) {
+                dialogo.close();
+            }
+        });
+        document.body.appendChild(dialogo);
+    }
+    return dialogo;
+}
+
+function textoCreditos(creditos) {
+    return creditos === 1 ? "1 crédito" : `${creditos} créditos`;
+}
+
+/** Muestra el nombre, los créditos y el enfoque de la materia, y el semestre al que pertenece. */
+function mostrarDetalleMateria(materia, semestre) {
+    const dialogo = obtenerDialogoMateria();
+
+    const datos = crearElemento("dl", "datos-materia");
+    [
+        ["Créditos", textoCreditos(materia.creditos)],
+        ["Enfoque", materia.enfoqueTematico],
+        ["Semestre", `Semestre ${semestre.numero} · ${semestre.enfoquePrincipal}`]
+    ].forEach(([etiqueta, valor]) => {
+        datos.append(crearElemento("dt", null, etiqueta), crearElemento("dd", null, valor));
+    });
+
+    const botonCerrar = crearElemento("button", "btn outline", "Cerrar");
+    botonCerrar.type = "button";
+    botonCerrar.addEventListener("click", () => dialogo.close());
+
+    const contenido = crearElemento("div", "contenido-dialogo");
+    contenido.append(crearElemento("h3", null, materia.nombre), datos, botonCerrar);
+
+    dialogo.replaceChildren(contenido);
+    dialogo.showModal();
 }

@@ -1,53 +1,44 @@
-const datosGuardados = localStorage.getItem("perfilVocacional");
+const datosGuardados = leerJsonLocal("perfilVocacional");
 
-if (!datosGuardados) {
+if (!datosGuardados || !Array.isArray(datosGuardados.areasDominantes)) {
     document.getElementById("listaDominantes").textContent =
         "No hay un perfil guardado. Vuelve a realizar el test.";
 } else {
-    renderizarPerfil(JSON.parse(datosGuardados));
+    renderizarPerfil(datosGuardados);
 }
 
 function renderizarPerfil(perfil) {
     const contenedorDominantes = document.getElementById("listaDominantes");
-    contenedorDominantes.innerHTML = "";
+    contenedorDominantes.replaceChildren();
 
     perfil.areasDominantes.forEach((area) => {
-        const tarjeta = document.createElement("div");
-        tarjeta.className = "card hoverable";
-        tarjeta.innerHTML = `
-            <span class="badge-area">${area.nombreAmigable}</span>
-            <div class="bar">
-                <div><b>Afinidad</b><b>${area.afinidad}%</b></div>
-                <span><i style="width:${area.afinidad}%"></i></span>
-            </div>
-            <p class="motivo">${area.interpretacion}</p>
-        `;
+        const tarjeta = crearElemento("div", "card hoverable");
+        tarjeta.append(
+            crearElemento("span", "badge-area", area.nombreAmigable),
+            crearBarraAfinidad("Afinidad", area.afinidad),
+            crearElemento("p", "motivo", area.interpretacion)
+        );
         contenedorDominantes.appendChild(tarjeta);
     });
 
     const contenedorCompleto = document.getElementById("listaCompleta");
-    contenedorCompleto.innerHTML = "";
+    contenedorCompleto.replaceChildren();
 
-    const areasOrdenadas = Object.entries(perfil.afinidadPorArea).sort((a, b) => b[1] - a[1]);
+    const areasOrdenadas = Object.entries(perfil.afinidadPorArea || {}).sort((a, b) => b[1] - a[1]);
 
     areasOrdenadas.forEach(([codigoArea, afinidad]) => {
-        const bloque = document.createElement("div");
-        bloque.className = "bar";
-        bloque.innerHTML = `
-            <div><b>${codigoArea}</b><b>${afinidad}%</b></div>
-            <span><i style="width:${afinidad}%"></i></span>
-        `;
-        contenedorCompleto.appendChild(bloque);
+        contenedorCompleto.appendChild(crearBarraAfinidad(codigoArea, afinidad));
     });
 }
 
 async function cargarHistorial() {
-    const sesion = obtenerSesion();
     const contenedor = document.getElementById("listaHistorial");
-    if (!sesion || !contenedor) return;
+    if (!obtenerSesion() || !contenedor) return;
 
     try {
-        const respuesta = await fetch(`/api/perfil/historial?usuarioId=${sesion.idUsuario}`);
+        // El servidor identifica al usuario por su token; ya no se envia
+        // el id en la URL.
+        const respuesta = await fetchAutenticado("/api/perfil/historial");
         if (!respuesta.ok) {
             contenedor.textContent = "No se pudo cargar el historial.";
             return;
@@ -60,16 +51,16 @@ async function cargarHistorial() {
             return;
         }
 
-        contenedor.innerHTML = "";
+        contenedor.replaceChildren();
         historial.forEach((intento) => {
             const fecha = new Date(intento.fecha).toLocaleString("es-CO", {
                 dateStyle: "medium", timeStyle: "short"
             });
             const areas = intento.perfil.areasDominantes.map(a => a.nombreAmigable).join(", ");
 
-            const fila = document.createElement("p");
+            const fila = crearElemento("p");
             fila.style.marginBottom = "10px";
-            fila.innerHTML = `<b>${fecha}</b> — ${areas}`;
+            fila.append(crearElemento("b", null, fecha), " — " + areas);
             contenedor.appendChild(fila);
         });
 

@@ -3,10 +3,13 @@ Este es un espacio destinado al desarrollo del trabajo de Ingeniería de softwar
  
 ## Cómo levantar el proyecto
 1. Clonar el repositorio
-2. Copiar `src/main/resources/application.properties.example` a `application.properties`
-3. Llenar las credenciales de Supabase (URL, Publishable key) y de la base de datos (host, usuario, contraseña del pooler)
-4. Ejecutar: `mvn spring-boot:run`
+2. Copiar `proyecto-registro/src/main/resources/application.properties.example` a `application.properties` (este archivo está en `.gitignore`; **nunca** subirlo)
+3. Definir las credenciales como variables de entorno: `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `DB_URL` (con `?sslmode=require`), `DB_USERNAME`, `DB_PASSWORD`
+4. Ejecutar (desde `proyecto-registro`): `mvn spring-boot:run`
 5. Abrir `http://localhost:8080/registro.html`
+
+## Seguridad
+Ver [SEGURIDAD.md](SEGURIDAD.md): hallazgos de la auditoría, correcciones y acciones manuales pendientes (rotar credenciales, ejecutar `sql/seguridad_rls.sql`).
 
 ## Cómo correr las pruebas
 mvn test

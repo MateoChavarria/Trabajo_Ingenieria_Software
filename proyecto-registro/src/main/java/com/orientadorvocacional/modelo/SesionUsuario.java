@@ -1,27 +1,29 @@
 package com.orientadorvocacional.modelo;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 /**
- * Representa la sesion activa de un usuario que ya inicio sesion.
- *
- * Todos los campos son privados. El constructor NO valida nada por
- * si mismo (esa responsabilidad no le corresponde); simplemente
- * delega en el setter correspondiente, igual que en la clase Usuario.
+ * Sesion activa de un usuario: el token emitido por Supabase y el
+ * instante (UTC) en que deja de ser valido. Se usa Instant para que el
+ * navegador interprete la fecha sin ambiguedad de zona horaria.
  */
 public class SesionUsuario {
 
-    /** Duración de la sesión antes de pedir volver a iniciar sesión. */
-    public static final long DURACION_SESION_MINUTOS = 60;
+    public static final long DURACION_SESION_POR_DEFECTO_SEGUNDOS = 3600;
 
     private String tokenAcceso;
     private String idUsuario;
-    private LocalDateTime fechaExpiracion;
+    private final Instant fechaExpiracion;
 
     public SesionUsuario(String tokenAcceso, String idUsuario) {
+        this(tokenAcceso, idUsuario, DURACION_SESION_POR_DEFECTO_SEGUNDOS);
+    }
+
+    public SesionUsuario(String tokenAcceso, String idUsuario, long segundosValidez) {
         setTokenAcceso(tokenAcceso);
         setIdUsuario(idUsuario);
-        this.fechaExpiracion = LocalDateTime.now().plusMinutes(DURACION_SESION_MINUTOS);
+        long validez = segundosValidez > 0 ? segundosValidez : DURACION_SESION_POR_DEFECTO_SEGUNDOS;
+        this.fechaExpiracion = Instant.now().plusSeconds(validez);
     }
 
     public String getTokenAcceso() {
@@ -46,14 +48,11 @@ public class SesionUsuario {
         this.idUsuario = idUsuario;
     }
 
-    public LocalDateTime getFechaExpiracion() {
+    public Instant getFechaExpiracion() {
         return fechaExpiracion;
     }
 
-    /**
-     * Indica si la sesión ya venció y se debe pedir iniciar sesión de nuevo.
-     */
     public boolean estaExpirada() {
-        return LocalDateTime.now().isAfter(fechaExpiracion);
+        return Instant.now().isAfter(fechaExpiracion);
     }
 }

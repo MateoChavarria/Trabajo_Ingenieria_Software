@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/estilo.css">
 </head>
-<body>
+<body data-requiere-sesion>
 <header class="nav" id="nav"></header>
 <main class="wrap">
     <h1 style="margin:28px 0 6px">Tus carreras recomendadas</h1>
@@ -21,8 +21,8 @@
     <div id="listaCarreras" class="grid-cards"></div>
 </main>
 <footer class="pie">Orientador Vocacional UPB · Proyecto académico</footer>
+<script src="js/utilidadesDom.js"></script>
 <script src="js/sesion.js"></script>
-<script>requerirSesion(); pintarNav();</script>
 <script src="js/carreras.js"></script>
 </body>
 </html>

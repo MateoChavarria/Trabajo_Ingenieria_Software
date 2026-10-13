@@ -1,10 +1,10 @@
-const datosGuardados = localStorage.getItem("carrerasRecomendadas");
+const datosGuardados = leerJsonLocal("carrerasRecomendadas");
 
-if (!datosGuardados) {
+if (!datosGuardados || !Array.isArray(datosGuardados.carreras)) {
     document.getElementById("listaCarreras").textContent =
         "No hay recomendaciones guardadas. Vuelve a realizar el test.";
 } else {
-    renderizarCarreras(JSON.parse(datosGuardados));
+    renderizarCarreras(datosGuardados);
 }
 
 function renderizarCarreras(resultado) {
@@ -13,26 +13,26 @@ function renderizarCarreras(resultado) {
     }
 
     const contenedor = document.getElementById("listaCarreras");
-    contenedor.innerHTML = "";
+    contenedor.replaceChildren();
 
     resultado.carreras.forEach((item) => {
-        const tarjeta = document.createElement("div");
-        tarjeta.className = "card hoverable";
+        const tarjeta = crearElemento("div", "card hoverable");
 
-        tarjeta.innerHTML = `
-            <span class="badge-area">${item.carrera.areaCategoria}</span>
-            <h3>${item.carrera.nombre}</h3>
-            <div class="bar">
-                <div><b>Afinidad</b><b>${item.afinidad}%</b></div>
-                <span><i style="width:${item.afinidad}%"></i></span>
-            </div>
-            <p class="motivo">${item.motivo}</p>
-            <a class="btn" href="carrera-detalle.html?id=${item.carrera.id}" style="margin-top:10px;display:inline-block">Ver detalle</a>
-        `;
-
-        tarjeta.querySelector("a").addEventListener("click", () => {
+        const enlace = crearElemento("a", "btn", "Ver detalle");
+        enlace.href = enlaceDetalleCarrera(item.carrera.id);
+        enlace.style.marginTop = "10px";
+        enlace.style.display = "inline-block";
+        enlace.addEventListener("click", () => {
             localStorage.setItem("carreraSeleccionada", JSON.stringify(item));
         });
+
+        tarjeta.append(
+            crearElemento("span", "badge-area", item.carrera.areaCategoria),
+            crearElemento("h3", null, item.carrera.nombre),
+            crearBarraAfinidad("Afinidad", item.afinidad),
+            crearElemento("p", "motivo", item.motivo),
+            enlace
+        );
 
         contenedor.appendChild(tarjeta);
     });
