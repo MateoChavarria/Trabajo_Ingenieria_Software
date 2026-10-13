@@ -119,3 +119,16 @@ footer.pie{padding:30px 0;border-top:1px solid var(--line);color:#5b6190;font-si
 .tabla-pensum th{font-size:.8rem;text-transform:uppercase;letter-spacing:.03em;color:#3d4372}
 .tabla-pensum td.num,.tabla-pensum th.num{text-align:right;white-space:nowrap}
 .tabla-pensum tfoot td{font-weight:700;border-bottom:none}
+
+
+/* Detalle de materia (ventana emergente al hacer clic) */
+.materia-fila{cursor:pointer}
+.materia-fila:hover{background:var(--paper)}
+.materia-boton{background:none;border:none;padding:0;font:inherit;color:inherit;text-align:left;cursor:pointer;text-decoration:underline dotted;text-underline-offset:4px}
+.dialogo-materia{margin:auto;border:2px solid var(--ink);border-radius:20px;padding:0;max-width:420px;width:calc(100% - 32px);background:var(--white);color:var(--ink);box-shadow:6px 6px 0 var(--ink)}
+.dialogo-materia::backdrop{background:rgba(20,26,61,.6)}
+.dialogo-materia .contenido-dialogo{padding:24px}
+.dialogo-materia h3{font-size:1.25rem;margin-bottom:14px}
+.datos-materia{display:grid;grid-template-columns:auto 1fr;gap:8px 16px;margin-bottom:18px}
+.datos-materia dt{font-weight:700;color:#3d4372}
+.datos-materia dd{margin:0}
