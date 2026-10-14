@@ -15,7 +15,7 @@ Ver [SEGURIDAD.md](SEGURIDAD.md): hallazgos de la auditoría, correcciones y acc
 mvn test
 
 ## Estado del pipeline
-[Badge o enlace a la pestaña Actions]
+https://github.com/MateoChavarria/Trabajo_Ingenieria_Software/actions/workflows/ci.yml/badge.svg
 
 ## Nota de uso de IA
 [Durante el desarrollo de este proyecto se utilizaron herramientas de inteligencia artificial (Claude, de Anthropic) como apoyo para:
