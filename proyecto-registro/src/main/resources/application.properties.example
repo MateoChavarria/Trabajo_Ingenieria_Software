@@ -12,6 +12,10 @@
 # ============================================================
 server.port=8080
 
+# Los archivos estaticos (HTML, CSS, JS) se revalidan en cada carga, para
+# que el navegador no muestre una version vieja despues de un cambio.
+spring.web.resources.cache.cachecontrol.no-cache=true
+
 # Nunca devolver trazas ni mensajes internos de excepciones al cliente.
 server.error.include-stacktrace=never
 server.error.include-message=never

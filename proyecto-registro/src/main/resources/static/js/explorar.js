@@ -18,7 +18,7 @@ async function cargarCarreras() {
             enlace.style.display = "inline-block";
 
             tarjeta.append(
-                crearElemento("span", "badge-area", carrera.areaCategoria),
+                crearElemento("span", "badge-area", nombreArea(carrera.areaCategoria)),
                 crearElemento("h3", null, carrera.nombre),
                 crearElemento("p", "motivo", carrera.campoLaboral),
                 enlace

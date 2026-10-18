@@ -27,7 +27,7 @@ function renderizarPerfil(perfil) {
     const areasOrdenadas = Object.entries(perfil.afinidadPorArea || {}).sort((a, b) => b[1] - a[1]);
 
     areasOrdenadas.forEach(([codigoArea, afinidad]) => {
-        contenedorCompleto.appendChild(crearBarraAfinidad(codigoArea, afinidad));
+        contenedorCompleto.appendChild(crearBarraAfinidad(nombreArea(codigoArea), afinidad));
     });
 }
 

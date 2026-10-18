@@ -27,7 +27,7 @@ function renderizarCarreras(resultado) {
         });
 
         tarjeta.append(
-            crearElemento("span", "badge-area", item.carrera.areaCategoria),
+            crearElemento("span", "badge-area", nombreArea(item.carrera.areaCategoria)),
             crearElemento("h3", null, item.carrera.nombre),
             crearBarraAfinidad("Afinidad", item.afinidad),
             crearElemento("p", "motivo", item.motivo),

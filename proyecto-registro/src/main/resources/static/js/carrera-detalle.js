@@ -54,7 +54,7 @@ async function cargarSoloDetalle() {
 }
 
 function mostrarDatosBase(carrera) {
-    document.getElementById("badgeArea").textContent = carrera.areaCategoria;
+    document.getElementById("badgeArea").textContent = nombreArea(carrera.areaCategoria);
     document.getElementById("nombreCarrera").textContent = carrera.nombre;
     document.getElementById("descripcionCarrera").textContent = carrera.descripcion;
     document.getElementById("campoLaboralCarrera").textContent = carrera.campoLaboral;
@@ -99,6 +99,12 @@ function mostrarPensum(contenedor, pensum) {
         `${pensum.semestres.length} semestres · ${pensum.creditosTotales} créditos en total`
     ));
 
+    // Solo llegamos aqui si la carrera tiene pensum (es de la UPB Medellin), asi que se puede simular.
+    const botonSimular = crearElemento("a", "btn sun", "Simular esta carrera");
+    botonSimular.href = enlaceSimulador(idCarrera);
+    botonSimular.style.marginBottom = "14px";
+    contenedor.appendChild(botonSimular);
+
     pensum.semestres.forEach((semestre, indice) => {
         contenedor.appendChild(crearBloqueSemestre(semestre, indice === 0));
     });
@@ -108,98 +114,10 @@ function crearBloqueSemestre(semestre, abierto) {
     const bloque = crearElemento("details", "semestre-bloque");
     bloque.open = abierto;
 
+    // El enfoque y la descripcion del semestre se muestran solo en la simulacion.
     bloque.append(
-        crearElemento("summary", null, `Semestre ${semestre.numero} · ${semestre.enfoquePrincipal}`),
-        crearElemento("p", "descripcion-semestre", semestre.descripcion),
+        crearElemento("summary", null, `Semestre ${semestre.numero}`),
         crearTablaMaterias(semestre)
     );
     return bloque;
-}
-
-function crearTablaMaterias(semestre) {
-    const tabla = crearElemento("table", "tabla-pensum");
-
-    const encabezado = crearElemento("tr");
-    encabezado.append(
-        crearElemento("th", null, "Materia"),
-        crearElemento("th", "num", "Créditos"),
-        crearElemento("th", null, "Enfoque")
-    );
-    tabla.appendChild(crearElemento("thead")).appendChild(encabezado);
-
-    const cuerpo = crearElemento("tbody");
-    semestre.materias.forEach((materia) => {
-        const fila = crearElemento("tr", "materia-fila");
-
-        // El nombre va dentro de un botón: así se puede abrir también con el teclado.
-        const botonNombre = crearElemento("button", "materia-boton", materia.nombre);
-        botonNombre.type = "button";
-        const celdaNombre = crearElemento("td");
-        celdaNombre.appendChild(botonNombre);
-
-        fila.append(
-            celdaNombre,
-            crearElemento("td", "num", materia.creditos),
-            crearElemento("td", null, materia.enfoqueTematico)
-        );
-        fila.addEventListener("click", () => mostrarDetalleMateria(materia, semestre));
-        cuerpo.appendChild(fila);
-    });
-    tabla.appendChild(cuerpo);
-
-    const total = crearElemento("tr");
-    total.append(
-        crearElemento("td", null, "Total del semestre"),
-        crearElemento("td", "num", semestre.creditosTotales),
-        crearElemento("td")
-    );
-    tabla.appendChild(crearElemento("tfoot")).appendChild(total);
-
-    return tabla;
-}   
-
-
-/** Crea una sola vez la ventana emergente donde se muestra el detalle de una materia. */
-function obtenerDialogoMateria() {
-    let dialogo = document.getElementById("dialogoMateria");
-    if (!dialogo) {
-        dialogo = crearElemento("dialog", "dialogo-materia");
-        dialogo.id = "dialogoMateria";
-        // Un clic en el fondo oscuro (fuera de la tarjeta) cierra la ventana.
-        dialogo.addEventListener("click", (evento) => {
-            if (evento.target === dialogo) {
-                dialogo.close();
-            }
-        });
-        document.body.appendChild(dialogo);
-    }
-    return dialogo;
-}
-
-function textoCreditos(creditos) {
-    return creditos === 1 ? "1 crédito" : `${creditos} créditos`;
-}
-
-/** Muestra el nombre, los créditos y el enfoque de la materia, y el semestre al que pertenece. */
-function mostrarDetalleMateria(materia, semestre) {
-    const dialogo = obtenerDialogoMateria();
-
-    const datos = crearElemento("dl", "datos-materia");
-    [
-        ["Créditos", textoCreditos(materia.creditos)],
-        ["Enfoque", materia.enfoqueTematico],
-        ["Semestre", `Semestre ${semestre.numero} · ${semestre.enfoquePrincipal}`]
-    ].forEach(([etiqueta, valor]) => {
-        datos.append(crearElemento("dt", null, etiqueta), crearElemento("dd", null, valor));
-    });
-
-    const botonCerrar = crearElemento("button", "btn outline", "Cerrar");
-    botonCerrar.type = "button";
-    botonCerrar.addEventListener("click", () => dialogo.close());
-
-    const contenido = crearElemento("div", "contenido-dialogo");
-    contenido.append(crearElemento("h3", null, materia.nombre), datos, botonCerrar);
-
-    dialogo.replaceChildren(contenido);
-    dialogo.showModal();
 }
