@@ -48,7 +48,7 @@ header.nav .wrap{display:flex;align-items:center;justify-content:space-between;g
 .card h3{font-size:1.25rem;margin-bottom:6px}
 
 /* Hero (pagina de inicio) */
-.hero{padding:56px 0 48px}
+.hero{padding:56px 24px 48px}
 .hero h1{font-size:clamp(2.2rem,5vw,3.4rem);font-weight:800;max-width:16ch}
 .hero p{margin:16px 0 26px;max-width:52ch;color:var(--medio);font-size:1.1rem}
 .hero .acts{display:flex;gap:12px;flex-wrap:wrap}
@@ -166,3 +166,52 @@ footer.pie{padding:30px 0;border-top:1px solid var(--line);color:var(--suave);fo
 .temas-dificiles li{margin-bottom:2px}
 .total-semestre{font-weight:700;text-align:right;margin-top:4px}
 .nota-electiva{margin:10px 0 0;font-size:.88rem;font-style:italic;color:var(--suave)}
+
+/* ============================================================
+   Sprint 10: acceso completo, pago y pasarela simulada
+   ============================================================ */
+
+/* Paginas que solo se ven pagando: se ocultan hasta confirmar el acceso (evita ver contenido y que luego salte a pagar). */
+body[data-requiere-acceso]:not(.acceso-verificado) > main{visibility:hidden}
+
+.lista-incluye{list-style:none;display:grid;gap:8px;margin-top:10px}
+.lista-incluye li{display:flex;gap:10px;align-items:flex-start;font-weight:600}
+.lista-incluye.gratis li::before{content:"✓";color:var(--mint);font-weight:800}
+.lista-incluye.con-candado li::before{content:"🔒";font-size:.85rem;line-height:1.7}
+
+.badge-bloqueado{display:inline-block;background:rgba(255,200,61,.14);color:#ffd666;border:2px solid var(--sun);padding:5px 14px;border-radius:999px;line-height:1.35;font-size:.82rem;font-weight:700;margin-bottom:10px}
+.nota-bloqueo{margin:-4px 0 14px}
+
+.precio-pago{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:6px 0 14px}
+.precio-pago strong{font-family:var(--display);font-size:2.4rem;line-height:1}
+.precio-pago span{color:var(--suave);font-weight:600}
+
+/* Pasarela simulada */
+.banner-pruebas{background:rgba(255,200,61,.14);border:2px dashed var(--sun);color:#ffd666;border-radius:14px;padding:10px 16px;font-weight:700;font-size:.9rem;text-align:center;margin:24px 0 16px}
+.pasarela-cabecera{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.pasarela-cabecera b{font-family:var(--display);font-size:1.3rem}
+.pasarela-cabecera span{color:var(--suave);font-size:.85rem}
+.datos-pago{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;margin-bottom:10px}
+.datos-pago dt{font-weight:700;color:var(--medio)}
+.datos-pago dd{margin:0;word-break:break-all}
+.fila-tarjeta{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.acciones-pago{display:flex;gap:12px;margin-top:22px;flex-wrap:wrap}
+.acciones-pago .btn{flex:1;text-align:center;white-space:nowrap}
+.tarjetas-prueba{margin-top:20px;border:2px solid var(--line);border-radius:14px;padding:10px 16px}
+.tarjetas-prueba summary{cursor:pointer;font-weight:700}
+.tarjetas-prueba table{width:100%;border-collapse:collapse;margin-top:10px;font-size:.9rem}
+.tarjetas-prueba td{padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tarjetas-prueba td:first-child{white-space:nowrap;font-variant-numeric:tabular-nums}
+.tarjetas-prueba tr:last-child td{border-bottom:none}
+.btn-mini{padding:6px 14px;font-size:.8rem;border-width:2px}
+.resultado-pago h1{margin-bottom:12px}
+.resultado-pago .acciones-pago{margin-top:18px}
+@media(max-width:640px){
+  .fila-tarjeta{grid-template-columns:1fr}
+  /* Tarjetas de prueba: cada fila en dos lineas para que quepa en pantallas angostas */
+  .tarjetas-prueba table{display:block}
+  .tarjetas-prueba tr{display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+  .tarjetas-prueba tr:last-child{border-bottom:none}
+  .tarjetas-prueba td{border-bottom:none;padding:2px 0}
+  .tarjetas-prueba td:nth-child(3){grid-column:2;grid-row:1 / span 2}
+}

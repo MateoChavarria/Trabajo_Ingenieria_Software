@@ -1,10 +1,47 @@
-const datosGuardados = leerJsonLocal("perfilVocacional");
+// Sprint 10: primero se muestra el estado del acceso. Sin acceso completo no
+// se muestra el perfil vocacional ni el historial (son parte de lo que se paga).
+esperarAcceso().then((acceso) => {
+    pintarEstadoAcceso(acceso);
+    if (acceso === false) {
+        document.getElementById("seccionesPerfil").hidden = true;
+        return;
+    }
+    mostrarPerfilGuardado();
+    cargarHistorial();
+});
 
-if (!datosGuardados || !Array.isArray(datosGuardados.areasDominantes)) {
-    document.getElementById("listaDominantes").textContent =
-        "No hay un perfil guardado. Vuelve a realizar el test.";
-} else {
-    renderizarPerfil(datosGuardados);
+function pintarEstadoAcceso(acceso) {
+    const tarjeta = document.getElementById("estadoAcceso");
+    tarjeta.replaceChildren();
+
+    if (acceso === true) {
+        tarjeta.append(
+            crearElemento("span", "badge-area", "Acceso completo"),
+            crearElemento("p", "motivo", "Tienes desbloqueados el test vocacional, tus carreras recomendadas y el simulador de carreras.")
+        );
+    } else if (acceso === false) {
+        const boton = crearElemento("a", "btn sun", "Desbloquear acceso completo");
+        boton.href = "pago.html";
+        boton.style.marginTop = "12px";
+        tarjeta.append(
+            crearElemento("span", "badge-bloqueado", "🔒 Acceso gratuito"),
+            crearElemento("p", "motivo", "Puedes explorar las carreras, sus planes de estudio y las universidades. El test vocacional, tus carreras recomendadas y el simulador se desbloquean con el acceso completo."),
+            boton
+        );
+    } else {
+        tarjeta.appendChild(crearElemento("p", "motivo", "No se pudo verificar tu acceso en este momento."));
+    }
+}
+
+function mostrarPerfilGuardado() {
+    const datosGuardados = leerJsonLocal("perfilVocacional");
+
+    if (!datosGuardados || !Array.isArray(datosGuardados.areasDominantes)) {
+        document.getElementById("listaDominantes").textContent =
+            "No hay un perfil guardado. Vuelve a realizar el test.";
+    } else {
+        renderizarPerfil(datosGuardados);
+    }
 }
 
 function renderizarPerfil(perfil) {
@@ -68,5 +105,3 @@ async function cargarHistorial() {
         contenedor.textContent = "No se pudo conectar con el servidor.";
     }
 }
-
-cargarHistorial();

@@ -17,12 +17,16 @@ document.getElementById("formLogin").addEventListener("submit", async (evento) =
             const sesion = await respuesta.json();
             localStorage.setItem("sesion", JSON.stringify(sesion));
 
+            // Se consulta el acceso ahora para que el menu ya muestre (o no) los
+            // candados en la primera pagina. Si falla, no impide iniciar sesion.
+            await consultarAcceso();
+
             // Si llegamos aqui porque requerirSesion() nos mando desde
             // otra pagina, volvemos a ella; solo se aceptan paginas
             // propias de la lista blanca (evita redirecciones abiertas
             // y URLs "javascript:").
             const parametros = new URLSearchParams(window.location.search);
-            window.location.href = destinoSeguroDespuesDeLogin(parametros.get("volver"));
+            window.location.href = destinoSeguroDespuesDeLogin(parametros.get("volver"), parametros.get("id"));
         } else {
             mostrarAlerta(mensajeError, "error", await respuesta.text());
         }

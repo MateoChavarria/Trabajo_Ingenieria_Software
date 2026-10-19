@@ -79,14 +79,16 @@ async function cargarPensum() {
             return;
         }
 
-        mostrarPensum(contenedor, await respuesta.json());
+        // Se espera a saber si el usuario pago, para dibujar (o no) el candado del simulador.
+        const accesoCompleto = (await esperarAcceso()) === true;
+        mostrarPensum(contenedor, await respuesta.json(), accesoCompleto);
 
     } catch (error) {
         contenedor.textContent = "No se pudo conectar con el servidor.";
     }
 }
 
-function mostrarPensum(contenedor, pensum) {
+function mostrarPensum(contenedor, pensum, accesoCompleto) {
     contenedor.replaceChildren();
 
     if (!Array.isArray(pensum.semestres) || pensum.semestres.length === 0) {
@@ -99,11 +101,22 @@ function mostrarPensum(contenedor, pensum) {
         `${pensum.semestres.length} semestres · ${pensum.creditosTotales} créditos en total`
     ));
 
-    // Solo llegamos aqui si la carrera tiene pensum (es de la UPB Medellin), asi que se puede simular.
-    const botonSimular = crearElemento("a", "btn sun", "Simular esta carrera");
-    botonSimular.href = enlaceSimulador(idCarrera);
+    // Solo llegamos aqui si la carrera tiene pensum (es de la UPB Medellin), asi que se puede simular,
+    // pero la simulacion es una funcion de acceso completo: sin pagar se muestra con candado.
+    const botonSimular = crearElemento("a", "btn sun",
+        accesoCompleto ? "Simular esta carrera" : "🔒 Simular esta carrera");
+    if (accesoCompleto || !obtenerSesion()) {
+        // Quien no ha iniciado sesion pasa primero por el login; el servidor decide el resto.
+        botonSimular.href = enlaceSimulador(idCarrera);
+    } else {
+        botonSimular.href = "pago.html?volver=simulador.html&id=" + encodeURIComponent(idCarrera);
+    }
     botonSimular.style.marginBottom = "14px";
     contenedor.appendChild(botonSimular);
+    if (!accesoCompleto) {
+        contenedor.appendChild(crearElemento("p", "motivo nota-bloqueo",
+            "El simulador semestre por semestre se desbloquea con el acceso completo."));
+    }
 
     pensum.semestres.forEach((semestre, indice) => {
         contenedor.appendChild(crearBloqueSemestre(semestre, indice === 0));

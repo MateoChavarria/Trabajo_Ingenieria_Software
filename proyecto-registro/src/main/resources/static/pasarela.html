@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pasarela de pagos de prueba - Orientador Vocacional UPB</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/estilo.css">
+</head>
+<body data-requiere-sesion>
+<header class="nav" id="nav"></header>
+<main class="wrap" style="max-width:520px">
+    <div class="banner-pruebas">Modo de pruebas · Este pago es simulado, no se cobra dinero real</div>
+
+    <div id="mensajePasarela"></div>
+
+    <div class="card" id="tarjetaPasarela" hidden>
+        <div class="pasarela-cabecera">
+            <b>PasarelaDemo</b>
+            <span>Pago seguro simulado</span>
+        </div>
+
+        <dl class="datos-pago">
+            <dt>Comercio</dt><dd>Orientador Vocacional UPB</dd>
+            <dt>Concepto</dt><dd>Acceso completo</dd>
+            <dt>Referencia</dt><dd id="textoReferencia"></dd>
+            <dt>Total</dt><dd><b id="textoMonto"></b></dd>
+        </dl>
+
+        <form id="formPago">
+            <label for="nombreTitular">Nombre en la tarjeta</label>
+            <input type="text" id="nombreTitular" autocomplete="off" maxlength="60" required>
+
+            <label for="numeroTarjeta">Número de la tarjeta</label>
+            <input type="text" id="numeroTarjeta" inputmode="numeric" autocomplete="off" maxlength="23" placeholder="4242 4242 4242 4242" required>
+
+            <div class="fila-tarjeta">
+                <div>
+                    <label for="vencimiento">Vencimiento (MM/AA)</label>
+                    <input type="text" id="vencimiento" inputmode="numeric" autocomplete="off" maxlength="5" placeholder="12/30" required>
+                </div>
+                <div>
+                    <label for="cvv">Código de seguridad</label>
+                    <input type="password" id="cvv" inputmode="numeric" autocomplete="off" maxlength="4" placeholder="123" required>
+                </div>
+            </div>
+
+            <div class="acciones-pago">
+                <button type="button" id="btnCancelar" class="btn outline">Cancelar</button>
+                <button type="submit" id="btnPagar" class="btn sun">Pagar</button>
+            </div>
+        </form>
+
+        <details class="tarjetas-prueba">
+            <summary>Tarjetas de prueba</summary>
+            <p class="motivo" style="margin-top:8px">Con cualquier fecha futura y cualquier código de 3 dígitos.</p>
+            <table id="tablaTarjetasPrueba"></table>
+        </details>
+    </div>
+</main>
+<footer class="pie">Orientador Vocacional UPB · Proyecto académico</footer>
+<script src="js/utilidadesDom.js"></script>
+<script src="js/sesion.js"></script>
+<script src="js/pasarela.js"></script>
+</body>
+</html>

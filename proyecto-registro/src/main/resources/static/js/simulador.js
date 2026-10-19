@@ -27,7 +27,7 @@ if (!idEsValido) {
 
 async function cargarSimulacion() {
     try {
-        const respuesta = await fetch(`/api/carreras/${encodeURIComponent(idCarrera)}/simulacion`);
+        const respuesta = await fetchAutenticado(`/api/carreras/${encodeURIComponent(idCarrera)}/simulacion`);
 
         if (!respuesta.ok) {
             // El backend explica el motivo (por ejemplo, "solo disponible para carreras de la UPB Medellín").
