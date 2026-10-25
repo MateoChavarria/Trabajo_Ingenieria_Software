@@ -31,6 +31,11 @@ function nombreArea(codigo) {
     return texto.charAt(0).toUpperCase() + texto.slice(1);
 }
 
+/** 20000 -> "$20.000" (pesos colombianos). */
+function formatoPesos(monto) {
+    return "$" + Number(monto).toLocaleString("es-CO");
+}
+
 function porcentajeSeguro(valor) {
     const numero = Number(valor);
     if (!Number.isFinite(numero)) return 0;

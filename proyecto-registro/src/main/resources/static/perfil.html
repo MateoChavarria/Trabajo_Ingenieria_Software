@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Tu perfil vocacional - Orientador Vocacional UPB</title>
+    <title>Tu perfil vocacional - Orientador Vocacional</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
@@ -14,18 +14,35 @@
     <h1 style="margin:28px 0 6px">Tu perfil vocacional</h1>
     <p style="color:var(--suave);margin-bottom:24px">Esto es lo que más se destacó en tus respuestas.</p>
 
-    <h3 style="margin-bottom:12px">Tus áreas dominantes</h3>
-    <div id="listaDominantes" class="grid-cards"></div>
+    <section id="estadoAcceso" class="card"></section>
 
-    <h3 style="margin:28px 0 12px">Tu afinidad en todas las áreas</h3>
-    <div id="listaCompleta" class="card"></div>
+    <div id="seccionesPerfil">
+    <div id="sinTests" class="card" hidden>
+        <h3>Aún no tienes un test completado</h3>
+        <p class="motivo">Cuando termines el test vocacional, aquí verás tus áreas dominantes, tu afinidad en cada área y tu historial.</p>
+        <a class="btn sun" href="test.html" style="margin-top:14px">Hacer el test</a>
+    </div>
 
-    <h3 style="margin:28px 0 12px">Tu historial de tests</h3>
-    <div id="listaHistorial" class="card"></div>
-    
-    <a class="btn sun" href="carreras.html" style="margin-top:10px">Ver carreras recomendadas</a>
+    <section id="seccionDominantes" hidden>
+        <h3 style="margin-bottom:4px">Tus áreas dominantes</h3>
+        <p id="textoFechaPerfil" class="motivo" style="margin:0 0 14px"></p>
+        <div id="listaDominantes" class="grid-cards"></div>
+    </section>
+
+    <section id="seccionAfinidad" hidden>
+        <h3 style="margin:28px 0 4px">Tu afinidad en todas las áreas</h3>
+        <p id="textoFechaAfinidad" class="motivo" style="margin:0 0 14px"></p>
+        <div id="listaCompleta" class="card"></div>
+    </section>
+
+    <section id="seccionHistorial" hidden>
+        <h3 style="margin:28px 0 12px">Tu historial de tests</h3>
+        <div id="listaHistorial" class="historial"></div>
+    </section>
+
+    </div>
 </main>
-<footer class="pie">Orientador Vocacional UPB · Proyecto académico</footer>
+<footer class="pie">Orientador Vocacional</footer>
 <script src="js/utilidadesDom.js"></script>
 <script src="js/sesion.js"></script>
 <script src="js/perfil.js"></script>

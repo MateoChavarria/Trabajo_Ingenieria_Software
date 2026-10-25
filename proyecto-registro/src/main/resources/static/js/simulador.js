@@ -27,7 +27,7 @@ if (!idEsValido) {
 
 async function cargarSimulacion() {
     try {
-        const respuesta = await fetch(`/api/carreras/${encodeURIComponent(idCarrera)}/simulacion`);
+        const respuesta = await fetchAutenticado(`/api/carreras/${encodeURIComponent(idCarrera)}/simulacion`);
 
         if (!respuesta.ok) {
             // El backend explica el motivo (por ejemplo, "solo disponible para carreras de la UPB Medellín").
@@ -47,7 +47,7 @@ async function cargarSimulacion() {
 
 function iniciarSimulacion() {
     document.getElementById("nombreCarrera").textContent = `Simulación: ${simulacion.nombreCarrera}`;
-    document.title = `Simulación de ${simulacion.nombreCarrera} - Orientador Vocacional UPB`;
+    document.title = `Simulación de ${simulacion.nombreCarrera} - Orientador Vocacional`;
     document.getElementById("avisoReferencial").textContent = simulacion.aviso;
     document.getElementById("avisoResumen").textContent = simulacion.aviso;
     document.getElementById("simulacion").hidden = false;
