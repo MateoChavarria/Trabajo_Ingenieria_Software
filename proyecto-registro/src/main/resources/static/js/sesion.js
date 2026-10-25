@@ -66,8 +66,9 @@ function destinoSeguroDespuesDeLogin(volver, id) {
     return resolverDestino(volver, id, "perfil.html");
 }
 
-function destinoSeguroDespuesDePago(volver, id) {
-    return resolverDestino(volver, id, "test.html");
+/** Despues de pagar siempre se vuelve a la pagina principal (no se manda directo al test). */
+function destinoSeguroDespuesDePago() {
+    return "index.html";
 }
 
 /** Texto "&volver=...&id=..." para pasar el destino de una pantalla de pago a la siguiente. Vacio si no hay destino valido. */
@@ -230,7 +231,7 @@ function pintarNav() {
 
     contenedor.innerHTML = `
         <div class="wrap">
-            <a class="logo" href="index.html"><i><b></b><b></b><b></b><b></b></i>Orientador UPB</a>
+            <a class="logo" href="index.html"><i><b></b><b></b><b></b><b></b></i>Orientador Vocacional</a>
             <nav class="nav-links">
                 <a href="explorar.html">Explorar carreras</a>
                 <a href="universidades.html">Universidades</a>
@@ -254,6 +255,31 @@ function pintarNav() {
 // que impedia usar una Content-Security-Policy estricta).
 if (document.body.hasAttribute("data-requiere-sesion")) {
     requerirSesion();
+}
+
+// Login y registro son solo para quien NO tiene sesion. Si ya hay una, se
+// explica que primero debe cerrarla para entrar con otra cuenta o crear una nueva.
+if (document.body.hasAttribute("data-solo-invitados") && obtenerSesion()) {
+    const tarjetaFormulario = document.querySelector(".form-card");
+    if (tarjetaFormulario) {
+        Array.from(tarjetaFormulario.children).forEach((hijo) => { hijo.hidden = true; });
+
+        const irAlPerfil = crearElemento("a", "btn sun block", "Ir a mi perfil");
+        irAlPerfil.href = "perfil.html";
+        const cerrar = crearElemento("button", "btn outline block", "Cerrar sesión");
+        cerrar.type = "button";
+        cerrar.style.marginTop = "12px";
+        cerrar.addEventListener("click", cerrarSesion);
+
+        const aviso = crearElemento("div");
+        aviso.append(
+            crearElemento("h2", null, "Ya tienes una sesión iniciada"),
+            crearElemento("p", "sub", "Para entrar con otra cuenta o crear una nueva, primero cierra la sesión actual."),
+            irAlPerfil,
+            cerrar
+        );
+        tarjetaFormulario.appendChild(aviso);
+    }
 }
 
 // Una sola consulta al servidor por pagina: la usan el menu, el bloqueo de

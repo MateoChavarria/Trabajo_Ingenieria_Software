@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -89,5 +90,35 @@ class CasoUsoCalcularYGuardarResultadoTestTest {
         casoUso.ejecutar("usuario-3", respuestas);
 
         verify(repositorioResultadoMock, times(1)).guardar(any());
+    }
+
+    /**
+     * PU-35. Dado un cuestionario donde el usuario deja una pregunta sin
+     * responder, Cuando se intenta calcular el resultado, Entonces se
+     * rechaza con IllegalArgumentException y no se guarda nada.
+     */
+    @Test
+    void cuestionarioConPreguntaSinResponderEsRechazado() throws Exception {
+        Map<Integer, Integer> respuestas = Map.of(1, 10); // falta la pregunta 2
+
+        assertThatThrownBy(() -> casoUso.ejecutar("usuario-4", respuestas))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("todas las preguntas");
+
+        verify(repositorioResultadoMock, never()).guardar(any());
+    }
+
+    /**
+     * Una respuesta cuya opcion no pertenece a su pregunta tambien se
+     * rechaza (la opcion 20 es de la pregunta 2, no de la 1).
+     */
+    @Test
+    void opcionQueNoPerteneceALaPreguntaEsRechazada() throws Exception {
+        Map<Integer, Integer> respuestas = Map.of(1, 20, 2, 20);
+
+        assertThatThrownBy(() -> casoUso.ejecutar("usuario-5", respuestas))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        verify(repositorioResultadoMock, never()).guardar(any());
     }
 }

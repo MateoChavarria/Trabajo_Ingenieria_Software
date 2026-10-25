@@ -47,7 +47,7 @@ async function cargarSimulacion() {
 
 function iniciarSimulacion() {
     document.getElementById("nombreCarrera").textContent = `Simulación: ${simulacion.nombreCarrera}`;
-    document.title = `Simulación de ${simulacion.nombreCarrera} - Orientador Vocacional UPB`;
+    document.title = `Simulación de ${simulacion.nombreCarrera} - Orientador Vocacional`;
     document.getElementById("avisoReferencial").textContent = simulacion.aviso;
     document.getElementById("avisoResumen").textContent = simulacion.aviso;
     document.getElementById("simulacion").hidden = false;

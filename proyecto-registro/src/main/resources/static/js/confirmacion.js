@@ -64,14 +64,13 @@ async function dibujarResultado(pago) {
         await consultarAcceso();   // actualiza los candados guardados
         pintarNav();
 
-        const parametros = new URLSearchParams(window.location.search);
         tarjeta.append(
             crearElemento("h1", null, "¡Pago exitoso!"),
             crearElemento("div", "alerta exito", "Ya tienes acceso completo: test vocacional, carreras recomendadas y simulador."),
             crearComprobante(pago)
         );
         acciones.append(
-            crearBoton("Continuar", destinoSeguroDespuesDePago(parametros.get("volver"), parametros.get("id")), "sun"),
+            crearBoton("Ir al inicio", destinoSeguroDespuesDePago(), "sun"),
             crearBoton("Ver mi perfil", "perfil.html", "outline")
         );
 

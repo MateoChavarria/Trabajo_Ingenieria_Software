@@ -17,13 +17,6 @@ const campoCvv = document.getElementById("cvv");
 const botonPagar = document.getElementById("btnPagar");
 const botonCancelar = document.getElementById("btnCancelar");
 
-/** Tarjetas de prueba que entiende la pasarela simulada (las mismas del backend). */
-const TARJETAS_DE_PRUEBA = [
-    { numero: "4242 4242 4242 4242", resultado: "Pago aprobado" },
-    { numero: "4000 0000 0000 0002", resultado: "Rechazada: fondos insuficientes" },
-    { numero: "4000 0000 0000 0069", resultado: "Rechazada por el banco emisor" }
-];
-
 if (!referenciaEsValida) {
     mostrarAlerta(mensajePasarela, "error", "No se encontró el pago. Vuelve a la pantalla de pago e inténtalo de nuevo.");
     agregarEnlace("pago.html", "Ir a la pantalla de pago");
@@ -55,7 +48,6 @@ async function cargarPago() {
 
         document.getElementById("textoReferencia").textContent = pago.referencia;
         document.getElementById("textoMonto").textContent = formatoPesos(pago.monto) + " " + pago.moneda;
-        dibujarTarjetasDePrueba();
         tarjetaPasarela.hidden = false;
         campoNombre.focus();
 
@@ -66,37 +58,6 @@ async function cargarPago() {
 
 function irAConfirmacion() {
     window.location.href = "confirmacion.html?ref=" + encodeURIComponent(referenciaPago) + sufijoVolver();
-}
-
-// ---------- Tarjetas de prueba (con boton para autocompletar) ----------
-
-function vencimientoDeEjemplo() {
-    const fecha = new Date();
-    const mes = String(fecha.getMonth() + 1).padStart(2, "0");
-    const anio = String((fecha.getFullYear() + 2) % 100).padStart(2, "0");
-    return mes + "/" + anio;
-}
-
-function dibujarTarjetasDePrueba() {
-    const tabla = document.getElementById("tablaTarjetasPrueba");
-    tabla.replaceChildren();
-
-    TARJETAS_DE_PRUEBA.forEach((tarjeta) => {
-        const boton = crearElemento("button", "btn outline btn-mini", "Usar");
-        boton.type = "button";
-        boton.addEventListener("click", () => {
-            if (!campoNombre.value.trim()) campoNombre.value = "Estudiante de Prueba";
-            campoNumero.value = tarjeta.numero;
-            campoVencimiento.value = vencimientoDeEjemplo();
-            campoCvv.value = "123";
-        });
-
-        const fila = crearElemento("tr");
-        const celdaBoton = crearElemento("td");
-        celdaBoton.appendChild(boton);
-        fila.append(crearElemento("td", null, tarjeta.numero), crearElemento("td", null, tarjeta.resultado), celdaBoton);
-        tabla.appendChild(fila);
-    });
 }
 
 // ---------- Ayudas de escritura ----------

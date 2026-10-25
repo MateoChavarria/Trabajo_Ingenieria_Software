@@ -1,6 +1,6 @@
 -- ============================================================
--- ENDURECIMIENTO DE SEGURIDAD EN SUPABASE
--- Ejecutar UNA vez en: Supabase -> SQL Editor.
+-- ENDURECIMIENTO DE SEGURIDAD EN SUPABASE (version completa)
+-- Ejecutar en: Supabase -> SQL Editor. Es seguro repetirlo.
 --
 -- El backend se conecta a PostgreSQL con el rol "postgres" (dueño de
 -- las tablas), que no se ve afectado por RLS. En cambio, la API REST
@@ -8,29 +8,39 @@
 -- "authenticated" con la clave publica. Sin RLS, cualquiera con esa
 -- clave y la URL del proyecto podria leer/modificar las tablas.
 --
--- Este script activa RLS en todas las tablas y retira los permisos de
--- los roles publicos. No se crean politicas: la aplicacion NO usa la
--- API REST de Supabase para datos, solo JDBC desde el backend.
+-- Este script activa RLS y retira los permisos de los roles publicos
+-- en TODAS las tablas de la aplicacion (10). No se crean politicas:
+-- la aplicacion NO usa la API REST de Supabase para datos, solo JDBC.
+-- Si alguna tabla aun no existe en tu base, se omite sin error.
 -- ============================================================
 
-alter table public.usuarios           enable row level security;
-alter table public.resultados_test    enable row level security;
-alter table public.preguntas          enable row level security;
-alter table public.opciones_respuesta enable row level security;
-alter table public.carreras           enable row level security;
-
-revoke all on table public.usuarios           from anon, authenticated;
-revoke all on table public.resultados_test    from anon, authenticated;
-revoke all on table public.preguntas          from anon, authenticated;
-revoke all on table public.opciones_respuesta from anon, authenticated;
-revoke all on table public.carreras           from anon, authenticated;
+do $$
+declare
+  t text;
+begin
+  foreach t in array array[
+    'usuarios', 'resultados_test', 'preguntas', 'opciones_respuesta',
+    'carreras', 'universidades', 'semestres_carrera', 'materias_carrera',
+    'temas_dificiles_materia', 'pagos'
+  ]
+  loop
+    if to_regclass('public.' || t) is not null then
+      execute format('alter table public.%I enable row level security', t);
+      execute format('revoke all on table public.%I from anon, authenticated', t);
+    end if;
+  end loop;
+end $$;
 
 -- Correo unico sin importar mayusculas/minusculas.
 create unique index if not exists usuarios_correo_unico_idx
     on public.usuarios (lower(correo));
 
--- Verificacion: todas las filas deben mostrar rowsecurity = true.
+-- Verificacion: las 10 filas deben mostrar rowsecurity = true.
+-- Si falta alguna fila, esa tabla no existe todavia en tu base.
 select tablename, rowsecurity
 from pg_tables
 where schemaname = 'public'
-  and tablename in ('usuarios', 'resultados_test', 'preguntas', 'opciones_respuesta', 'carreras');
+  and tablename in ('usuarios', 'resultados_test', 'preguntas', 'opciones_respuesta',
+                    'carreras', 'universidades', 'semestres_carrera', 'materias_carrera',
+                    'temas_dificiles_materia', 'pagos')
+order by tablename;

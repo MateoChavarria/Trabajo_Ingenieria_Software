@@ -197,21 +197,29 @@ body[data-requiere-acceso]:not(.acceso-verificado) > main{visibility:hidden}
 .fila-tarjeta{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .acciones-pago{display:flex;gap:12px;margin-top:22px;flex-wrap:wrap}
 .acciones-pago .btn{flex:1;text-align:center;white-space:nowrap}
-.tarjetas-prueba{margin-top:20px;border:2px solid var(--line);border-radius:14px;padding:10px 16px}
-.tarjetas-prueba summary{cursor:pointer;font-weight:700}
-.tarjetas-prueba table{width:100%;border-collapse:collapse;margin-top:10px;font-size:.9rem}
-.tarjetas-prueba td{padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:middle}
-.tarjetas-prueba td:first-child{white-space:nowrap;font-variant-numeric:tabular-nums}
-.tarjetas-prueba tr:last-child td{border-bottom:none}
-.btn-mini{padding:6px 14px;font-size:.8rem;border-width:2px}
 .resultado-pago h1{margin-bottom:12px}
 .resultado-pago .acciones-pago{margin-top:18px}
 @media(max-width:640px){
   .fila-tarjeta{grid-template-columns:1fr}
-  /* Tarjetas de prueba: cada fila en dos lineas para que quepa en pantallas angostas */
-  .tarjetas-prueba table{display:block}
-  .tarjetas-prueba tr{display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
-  .tarjetas-prueba tr:last-child{border-bottom:none}
-  .tarjetas-prueba td{border-bottom:none;padding:2px 0}
-  .tarjetas-prueba td:nth-child(3){grid-column:2;grid-row:1 / span 2}
-}
+          }
+
+/* Historial de tests (perfil) */
+.historial{display:grid;gap:14px;margin-bottom:18px}
+.historial>.btn{justify-self:start}
+.intento{display:grid;grid-template-columns:84px 1fr;gap:18px;align-items:center;background:var(--white);border:2px solid var(--line);border-radius:18px;padding:14px 18px;transition:transform .15s,border-color .15s}
+.intento:hover{transform:translateY(-2px);border-color:var(--blue)}
+.intento[hidden]{display:none}
+.intento.reciente{border-color:var(--blue)}
+.intento-fecha{text-align:center;background:var(--paper);border:2px solid var(--line);border-radius:14px;padding:8px 4px;line-height:1.15}
+.intento-fecha .dia{display:block;font-family:var(--display);font-weight:800;font-size:1.7rem}
+.intento-fecha .mes{display:block;font-size:.72rem;text-transform:uppercase;color:var(--suave);font-weight:700}
+.intento-fecha .hora{display:block;font-size:.72rem;color:var(--suave);margin-top:4px}
+.intento-areas{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.etiqueta-reciente{background:var(--sun);color:var(--texto-sobre-claro);padding:3px 10px;border-radius:999px;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.chip-area{display:inline-flex;gap:6px;align-items:center;background:var(--paper);border:2px solid var(--line);border-radius:999px;padding:5px 12px;font-size:.85rem;font-weight:600;line-height:1.3}
+.chip-area b{color:var(--mint)}
+.chip-area.principal{background:var(--mint);border-color:var(--mint);color:var(--texto-sobre-claro)}
+.chip-area.principal b{color:var(--texto-sobre-claro)}
+@media(max-width:640px){.intento{grid-template-columns:68px 1fr;gap:12px;padding:12px}.intento-fecha .dia{font-size:1.4rem}}
+.btn-mini{padding:7px 16px;font-size:.82rem}
+.intento-areas .btn-mini{margin-left:auto}

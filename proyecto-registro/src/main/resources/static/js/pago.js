@@ -56,9 +56,8 @@ function dibujarOferta(oferta) {
 
 function dibujarYaTieneAcceso() {
     const tarjeta = crearElemento("div", "card");
-    const enlace = crearElemento("a", "btn sun", "Continuar");
-    const parametros = new URLSearchParams(window.location.search);
-    enlace.href = destinoSeguroDespuesDePago(parametros.get("volver"), parametros.get("id"));
+    const enlace = crearElemento("a", "btn sun", "Ir al inicio");
+    enlace.href = destinoSeguroDespuesDePago();
 
     tarjeta.append(
         crearElemento("div", "alerta exito", "Ya tienes acceso completo. No necesitas pagar de nuevo."),
