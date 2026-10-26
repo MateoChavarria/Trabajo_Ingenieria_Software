@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Panel de administración - Orientador Vocacional</title>
+    <meta name="robots" content="noindex">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/estilo.css">
+</head>
+<body data-requiere-sesion>
+<header class="nav" id="nav"></header>
+<main class="wrap" id="panelAdmin" hidden>
+    <h1 style="margin:28px 0 8px">Panel de administración</h1>
+    <p style="color:var(--suave);margin-bottom:20px">
+        Gestiona el catálogo de la aplicación y consulta usuarios y pagos. Los cambios se ven de inmediato.
+    </p>
+
+    <div class="pestanas" id="pestanas" role="tablist"></div>
+    <div id="mensajeAdmin" aria-live="polite"></div>
+    <section id="contenidoAdmin"></section>
+</main>
+<footer class="pie">Orientador Vocacional</footer>
+<script src="js/utilidadesDom.js"></script>
+<script src="js/sesion.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>

@@ -7,6 +7,7 @@ import com.orientadorvocacional.excepciones.ConsultaTemasDificilesFallidaExcepti
 import com.orientadorvocacional.excepciones.ConsultaUniversidadesFallidaException;
 import com.orientadorvocacional.excepciones.PensumNoDisponibleException;
 import com.orientadorvocacional.servicio.CasoUsoSimularCarrera;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,7 +38,7 @@ public class SimulacionController {
         try {
             return ResponseEntity.ok(casoUsoSimular.ejecutar(id));
         } catch (CarreraNoEncontradaException | PensumNoDisponibleException excepcion) {
-            return ResponseEntity.status(404).body(excepcion.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(excepcion.getMessage());
         } catch (ConsultaCarrerasFallidaException | ConsultaUniversidadesFallidaException
                  | ConsultaPensumFallidaException | ConsultaTemasDificilesFallidaException excepcion) {
             return ResponseEntity.internalServerError().body(excepcion.getMessage());

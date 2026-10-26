@@ -21,6 +21,7 @@ public class JpaPensumRepositorio implements IPensumRepositorio {
 
     private final SemestreCarreraJpaRepository semestreJpa;
     private final MateriaCarreraJpaRepository materiaJpa;
+    private final CacheTemporal<Integer, PensumCarrera> cache = new CacheTemporal<>(5 * 60 * 1000L, 500);
 
     public JpaPensumRepositorio(SemestreCarreraJpaRepository semestreJpa,
                                 MateriaCarreraJpaRepository materiaJpa) {
@@ -31,6 +32,14 @@ public class JpaPensumRepositorio implements IPensumRepositorio {
     @Override
     public PensumCarrera obtenerPorCarrera(Carrera carrera) throws ConsultaPensumFallidaException {
         try {
+            return cache.obtener(carrera.getId(), () -> construirPensum(carrera));
+        } catch (Exception excepcion) {
+            throw new ConsultaPensumFallidaException(
+                    "No se pudo consultar el plan de estudios de la carrera.", excepcion);
+        }
+    }
+
+    private PensumCarrera construirPensum(Carrera carrera) {
             // 1. Los semestres de la carrera, ya ordenados (1, 2, 3...).
             List<SemestreCarreraEntity> semestres = semestreJpa.findByCarreraIdOrderByNumeroAsc(carrera.getId());
 
@@ -53,11 +62,6 @@ public class JpaPensumRepositorio implements IPensumRepositorio {
                 ));
             }
             return new PensumCarrera(carrera.getId(), carrera.getNombre(), semestresPensum);
-
-        } catch (Exception excepcion) {
-            throw new ConsultaPensumFallidaException(
-                    "No se pudo consultar el plan de estudios de la carrera.", excepcion);
-        }
     }
 
     /** Consulta las materias de los semestres dados y las deja agrupadas por id de semestre. */

@@ -12,6 +12,9 @@ import java.util.regex.Pattern;
  */
 public class DatosTarjeta {
 
+    /** El vencimiento se escribe con dos cifras (MM/AA): "30" significa 2030. */
+    private static final int SIGLO_DE_LAS_TARJETAS = 2000;
+
     private static final Pattern PATRON_VENCIMIENTO = Pattern.compile("^(0[1-9]|1[0-2])/(\\d{2})$");
     private static final Pattern PATRON_CVV = Pattern.compile("^\\d{3,4}$");
     private static final Pattern PATRON_NUMERO = Pattern.compile("^\\d{13,19}$");
@@ -72,7 +75,7 @@ public class DatosTarjeta {
         }
         String limpio = vencimiento.trim();
         int mes = Integer.parseInt(limpio.substring(0, 2));
-        int anio = 2000 + Integer.parseInt(limpio.substring(3, 5));
+        int anio = SIGLO_DE_LAS_TARJETAS + Integer.parseInt(limpio.substring(3, 5));
         if (YearMonth.of(anio, mes).isBefore(YearMonth.now())) {
             throw new IllegalArgumentException("La tarjeta está vencida.");
         }

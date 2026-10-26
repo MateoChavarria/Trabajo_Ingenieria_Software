@@ -8,6 +8,7 @@ import com.orientadorvocacional.servicio.CasoUsoListarTodasLasCarreras;
 import com.orientadorvocacional.servicio.CasoUsoObtenerCarrerasRecomendadas;
 import com.orientadorvocacional.servicio.CasoUsoObtenerDetalleCarrera;
 import com.orientadorvocacional.servicio.ValidadorAfinidad;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -63,7 +64,7 @@ public class CarreraController {
             Carrera carrera = casoUsoDetalle.ejecutar(id);
             return ResponseEntity.ok(carrera);
         } catch (CarreraNoEncontradaException excepcion) {
-            return ResponseEntity.status(404).body(excepcion.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(excepcion.getMessage());
         } catch (ConsultaCarrerasFallidaException excepcion) {
             return ResponseEntity.internalServerError().body(excepcion.getMessage());
         }

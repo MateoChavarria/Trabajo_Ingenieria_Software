@@ -34,6 +34,11 @@ public final class AreasVocacionales {
             Map.entry("derecho", "Tienes un fuerte sentido de la justicia y facilidad para argumentar y defender posiciones. Te interesa que se respeten las normas y los derechos de las personas.")
     );
 
+    /** true si el codigo corresponde a una de las 8 areas conocidas. */
+    public static boolean esValida(String codigoArea) {
+        return codigoArea != null && NOMBRES_AMIGABLES.containsKey(codigoArea);
+    }
+
     public static String nombreAmigable(String codigoArea) {
         return NOMBRES_AMIGABLES.getOrDefault(codigoArea, codigoArea);
     }

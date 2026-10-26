@@ -20,7 +20,10 @@ import java.util.List;
 @Repository
 public class JpaRepositorioPreguntas implements IRepositorioPreguntas {
 
+    private static final long CINCO_MINUTOS_MS = 5 * 60 * 1000L;
+
     private final PreguntaJpaRepository repositorioJpa;
+    private final CacheTemporal<String, List<Pregunta>> cache = new CacheTemporal<>(CINCO_MINUTOS_MS, 1);
 
     public JpaRepositorioPreguntas(PreguntaJpaRepository repositorioJpa) {
         this.repositorioJpa = repositorioJpa;
@@ -29,8 +32,8 @@ public class JpaRepositorioPreguntas implements IRepositorioPreguntas {
     @Override
     public List<Pregunta> obtenerCuestionarioCompleto() throws CuestionarioFallidoException {
         try {
-            List<PreguntaEntity> entidades = repositorioJpa.findAllConOpcionesOrderByIdAsc();
-            return convertirAModeloDeDominio(entidades);
+            return cache.obtener("cuestionario", () ->
+                    convertirAModeloDeDominio(repositorioJpa.findAllConOpcionesOrderByIdAsc()));
 
         } catch (Exception excepcion) {
             throw new CuestionarioFallidoException(

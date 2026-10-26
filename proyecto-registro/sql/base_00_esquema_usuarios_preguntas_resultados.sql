@@ -18,7 +18,7 @@ create table if not exists public.usuarios (
   id              uuid primary key,
   correo          text not null,
   fecha_registro  timestamp not null default now(),
-  estado_cuenta   varchar(30) not null default 'activa'
+  estado_cuenta   varchar(30) not null default 'activo'
 );
 
 create table if not exists public.preguntas (

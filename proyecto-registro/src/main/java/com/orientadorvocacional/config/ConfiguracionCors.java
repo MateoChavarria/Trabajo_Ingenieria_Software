@@ -19,6 +19,9 @@ import java.util.Arrays;
 @Configuration
 public class ConfiguracionCors implements WebMvcConfigurer {
 
+    /** Cuanto tiempo (1 hora) el navegador recuerda la respuesta a la consulta previa CORS. */
+    private static final long SEGUNDOS_CACHE_PREVIA = 3600;
+
     private final String[] origenesPermitidos;
 
     public ConfiguracionCors(@Value("${app.cors.allowed-origins:}") String origenesPermitidos) {
@@ -38,6 +41,6 @@ public class ConfiguracionCors implements WebMvcConfigurer {
                 .allowedMethods("GET", "POST")
                 .allowedHeaders("Content-Type", "Authorization")
                 .allowCredentials(false)
-                .maxAge(3600);
+                .maxAge(SEGUNDOS_CACHE_PREVIA);
     }
 }

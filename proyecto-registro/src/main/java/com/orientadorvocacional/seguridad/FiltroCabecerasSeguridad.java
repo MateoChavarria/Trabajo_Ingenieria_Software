@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 /**
  * Agrega cabeceras HTTP de seguridad a todas las respuestas:
@@ -30,6 +31,13 @@ public class FiltroCabecerasSeguridad extends OncePerRequestFilter {
             "form-action 'self'",
             "frame-ancestors 'none'");
 
+    private static final String HSTS_UN_ANIO = "max-age=31536000; includeSubDomains";
+    private static final String CACHE_CATALOGO_CINCO_MINUTOS = "public, max-age=300";
+
+    /** Catalogo publico (igual para todos): el navegador puede reutilizarlo unos minutos. */
+    private static final Pattern CATALOGO_PUBLICO =
+            Pattern.compile("^/api/(universidades|carreras(/[0-9]+(/pensum)?)?)$");
+
     @Override
     protected void doFilterInternal(HttpServletRequest peticion, HttpServletResponse respuesta,
                                     FilterChain cadena) throws ServletException, IOException {
@@ -41,12 +49,17 @@ public class FiltroCabecerasSeguridad extends OncePerRequestFilter {
         respuesta.setHeader("Cross-Origin-Opener-Policy", "same-origin");
 
         if (peticion.isSecure()) {
-            respuesta.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+            respuesta.setHeader("Strict-Transport-Security", HSTS_UN_ANIO);
         }
 
-        if (peticion.getRequestURI().startsWith("/api/")) {
-            respuesta.setHeader("Cache-Control", "no-store");
-            respuesta.setHeader("Pragma", "no-cache");
+        String ruta = peticion.getRequestURI();
+        if (ruta.startsWith("/api/")) {
+            if ("GET".equals(peticion.getMethod()) && CATALOGO_PUBLICO.matcher(ruta).matches()) {
+                respuesta.setHeader("Cache-Control", CACHE_CATALOGO_CINCO_MINUTOS);
+            } else {
+                respuesta.setHeader("Cache-Control", "no-store");
+                respuesta.setHeader("Pragma", "no-cache");
+            }
         }
 
         cadena.doFilter(peticion, respuesta);

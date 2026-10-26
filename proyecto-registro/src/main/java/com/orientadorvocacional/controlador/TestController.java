@@ -4,7 +4,7 @@ import com.orientadorvocacional.excepciones.CuestionarioFallidoException;
 import com.orientadorvocacional.excepciones.ResultadoTestFallidoException;
 import com.orientadorvocacional.modelo.Pregunta;
 import com.orientadorvocacional.seguridad.InterceptorAutenticacion;
-import com.orientadorvocacional.servicio.CasoUsoCalcularYGuardarResultadoTest;
+import com.orientadorvocacional.servicio.CasoUsoCalcularYGuardarResultadoVocacional;
 import com.orientadorvocacional.servicio.CasoUsoObtenerCuestionario;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,10 +26,10 @@ public class TestController {
     static final int MAXIMO_RESPUESTAS = 500;
 
     private final CasoUsoObtenerCuestionario casoUsoObtenerCuestionario;
-    private final CasoUsoCalcularYGuardarResultadoTest casoUsoCalcularResultado;
+    private final CasoUsoCalcularYGuardarResultadoVocacional casoUsoCalcularResultado;
 
     public TestController(CasoUsoObtenerCuestionario casoUsoObtenerCuestionario,
-                           CasoUsoCalcularYGuardarResultadoTest casoUsoCalcularResultado) {
+                           CasoUsoCalcularYGuardarResultadoVocacional casoUsoCalcularResultado) {
         this.casoUsoObtenerCuestionario = casoUsoObtenerCuestionario;
         this.casoUsoCalcularResultado = casoUsoCalcularResultado;
     }
