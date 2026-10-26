@@ -1,6 +1,7 @@
 package com.orientadorvocacional.config;
 
 import com.orientadorvocacional.seguridad.InterceptorAccesoCompleto;
+import com.orientadorvocacional.seguridad.InterceptorAdmin;
 import com.orientadorvocacional.seguridad.InterceptorAutenticacion;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -10,6 +11,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * Registra los interceptores de seguridad, en este orden:
  *   1) InterceptorAutenticacion: exige un token valido (quien eres).
  *   2) InterceptorAccesoCompleto: exige haber pagado (que puedes usar).
+ *   2) InterceptorAdmin: en /api/admin/** solo deja pasar a la cuenta administradora.
  */
 @Configuration
 public class ConfiguracionSeguridad implements WebMvcConfigurer {
@@ -25,11 +27,14 @@ public class ConfiguracionSeguridad implements WebMvcConfigurer {
 
     private final InterceptorAutenticacion interceptorAutenticacion;
     private final InterceptorAccesoCompleto interceptorAccesoCompleto;
+    private final InterceptorAdmin interceptorAdmin;
 
     public ConfiguracionSeguridad(InterceptorAutenticacion interceptorAutenticacion,
-                                  InterceptorAccesoCompleto interceptorAccesoCompleto) {
+                                  InterceptorAccesoCompleto interceptorAccesoCompleto,
+                                  InterceptorAdmin interceptorAdmin) {
         this.interceptorAutenticacion = interceptorAutenticacion;
         this.interceptorAccesoCompleto = interceptorAccesoCompleto;
+        this.interceptorAdmin = interceptorAdmin;
     }
 
     @Override
@@ -42,11 +47,18 @@ public class ConfiguracionSeguridad implements WebMvcConfigurer {
                         "/api/perfil/**",
                         "/api/carreras/recomendadas",
                         "/api/carreras/*/simulacion",
-                        "/api/pagos/**")
+                        "/api/pagos/**",
+                        "/api/yo/admin",
+                        "/api/admin/**")
                 .order(1);
 
         registry.addInterceptor(interceptorAccesoCompleto)
                 .addPathPatterns(RUTAS_DE_PAGO)
                 .order(2);
+
+        // Panel de administracion: ademas de la sesion, solo la cuenta administradora.
+        registry.addInterceptor(interceptorAdmin)
+                .addPathPatterns("/api/admin/**")
+                .order(3);
     }
 }

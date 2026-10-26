@@ -34,12 +34,12 @@ import java.util.Set;
  * de esa area — no hace falta un calculo distinto.
  */
 @Service
-public class CasoUsoCalcularYGuardarResultadoTest {
+public class CasoUsoCalcularYGuardarResultadoVocacional {
 
     private final IRepositorioPreguntas repositorioPreguntas;
     private final IRepositorioResultadoTest repositorioResultadoTest;
 
-    public CasoUsoCalcularYGuardarResultadoTest(IRepositorioPreguntas repositorioPreguntas,
+    public CasoUsoCalcularYGuardarResultadoVocacional(IRepositorioPreguntas repositorioPreguntas,
                                                  IRepositorioResultadoTest repositorioResultadoTest) {
         this.repositorioPreguntas = repositorioPreguntas;
         this.repositorioResultadoTest = repositorioResultadoTest;

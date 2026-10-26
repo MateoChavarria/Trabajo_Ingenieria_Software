@@ -4,6 +4,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -65,7 +66,7 @@ public class FiltroLimiteIntentos extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest peticion, HttpServletResponse respuesta,
                                     FilterChain cadena) throws ServletException, IOException {
         if (!registrarIntento(peticion.getRemoteAddr())) {
-            respuesta.setStatus(429);
+            respuesta.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
             respuesta.setHeader("Retry-After", String.valueOf(VENTANA_MS / 1000));
             respuesta.setContentType(MediaType.TEXT_PLAIN_VALUE);
             respuesta.setCharacterEncoding(StandardCharsets.UTF_8.name());

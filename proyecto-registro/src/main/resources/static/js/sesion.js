@@ -7,7 +7,7 @@
  * en el navegador solo sirve para dibujar candados sin esperar.
  */
 
-const CLAVES_DATOS_USUARIO = ["sesion", "perfilVocacional", "carrerasRecomendadas", "afinidadPorArea", "carreraSeleccionada", "accesoCompleto"];
+const CLAVES_DATOS_USUARIO = ["sesion", "perfilVocacional", "carrerasRecomendadas", "afinidadPorArea", "carreraSeleccionada", "accesoCompleto", "esAdmin"];
 
 /** Paginas internas a las que se puede volver despues del login o del pago (evita open redirect). */
 const PAGINAS_PERMITIDAS_VOLVER = ["index.html", "explorar.html", "test.html", "perfil.html", "carreras.html", "carrera-detalle.html", "simulador.html"];
@@ -150,6 +150,36 @@ function leerAccesoGuardado() {
     return datos.valor;
 }
 
+// ============================================================
+// Panel de administracion (el boton es solo visual: el servidor decide)
+// ============================================================
+
+function leerEsAdminGuardado() {
+    const sesion = obtenerSesion();
+    const datos = leerJsonLocal("esAdmin");
+    return Boolean(sesion && datos && datos.idUsuario === sesion.idUsuario && datos.valor === true);
+}
+
+/** Pregunta al servidor si la cuenta es la administradora. Devuelve true solo si cambio lo que se sabia. */
+async function consultarSiEsAdmin() {
+    const sesion = obtenerSesion();
+    if (!sesion) return false;
+
+    try {
+        const respuesta = await fetch("/api/yo/admin", {
+            headers: { "Authorization": "Bearer " + sesion.tokenAcceso }
+        });
+        if (!respuesta.ok) return false;
+
+        const esAdmin = (await respuesta.json()).esAdmin === true;
+        const habiaCambio = esAdmin !== leerEsAdminGuardado();
+        localStorage.setItem("esAdmin", JSON.stringify({ idUsuario: sesion.idUsuario, valor: esAdmin }));
+        return habiaCambio;
+    } catch (error) {
+        return false;
+    }
+}
+
 /**
  * Pregunta al servidor si el usuario ya pago y guarda la respuesta.
  * Devuelve true, false, o null si no se pudo saber (sin sesion o sin
@@ -227,6 +257,8 @@ function pintarNav() {
             ? `<a href="pago.html?volver=test.html" title="Se desbloquea con el acceso completo">🔒 Hacer el test</a>`
             : `<a href="test.html">Hacer el test</a>`;
     }
+    const botonAdmin = sesion && leerEsAdminGuardado()
+        ? `<a class="btn outline" href="admin.html">Administración</a>` : "";
     const botonDesbloquear = bloqueado ? `<a class="btn sun" href="pago.html">Desbloquear acceso</a>` : "";
 
     contenedor.innerHTML = `
@@ -238,6 +270,7 @@ function pintarNav() {
                 ${linkTest}
                 ${linkCuenta}
                 ${botonDesbloquear}
+                ${botonAdmin}
             </nav>
         </div>
     `;
@@ -284,13 +317,22 @@ if (document.body.hasAttribute("data-solo-invitados") && obtenerSesion()) {
 
 // Una sola consulta al servidor por pagina: la usan el menu, el bloqueo de
 // paginas de pago y los scripts de cada pagina (con esperarAcceso()).
-const consultaInicialAcceso = obtenerSesion() ? consultarAcceso() : Promise.resolve(null);
+// Si ya sabemos que este usuario pago (el pago es definitivo), no se espera la
+// respuesta del servidor para mostrar la pagina: se confirma en segundo plano.
+const verificacionEnSegundoPlano = obtenerSesion() ? consultarAcceso() : Promise.resolve(null);
+const consultaInicialAcceso = leerAccesoGuardado() === true
+    ? Promise.resolve(true)
+    : verificacionEnSegundoPlano;
 
 function esperarAcceso() {
     return consultaInicialAcceso;
 }
 
 pintarNav();
+
+if (obtenerSesion()) {
+    consultarSiEsAdmin().then((cambio) => { if (cambio) pintarNav(); });
+}
 
 consultaInicialAcceso.then((acceso) => {
     // Paginas que solo se pueden ver pagando: se ocultan hasta confirmar el acceso.

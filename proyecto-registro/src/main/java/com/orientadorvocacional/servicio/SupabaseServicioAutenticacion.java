@@ -48,6 +48,13 @@ public class SupabaseServicioAutenticacion implements IServicioAutenticacion {
 
     private static final Logger LOG = LoggerFactory.getLogger(SupabaseServicioAutenticacion.class);
 
+    private static final int HTTP_OK = 200;
+    private static final int HTTP_CREADO = 201;
+    private static final int HTTP_NO_AUTORIZADO = 401;
+    private static final int HTTP_PROHIBIDO = 403;
+    private static final int HTTP_DEMASIADAS_PETICIONES = 429;
+    private static final int HTTP_ERROR_DEL_SERVIDOR = 500;
+
     private static final Duration TIEMPO_MAXIMO_PETICION = Duration.ofSeconds(15);
 
     /** Duracion por defecto de un access_token de Supabase si no informa "expires_in". */
@@ -169,10 +176,10 @@ public class SupabaseServicioAutenticacion implements IServicioAutenticacion {
                     clienteHttp.send(peticion, HttpResponse.BodyHandlers.ofString());
 
             int estado = respuesta.statusCode();
-            if (estado == 401 || estado == 403) {
+            if (estado == HTTP_NO_AUTORIZADO || estado == HTTP_PROHIBIDO) {
                 throw new CredencialesInvalidasException("Sesión no válida o expirada.");
             }
-            if (estado != 200) {
+            if (estado != HTTP_OK) {
                 LOG.warn("Supabase respondio {} al validar un token", estado);
                 throw new InicioSesionFallidoException("No se pudo verificar la sesión.");
             }
@@ -220,7 +227,7 @@ public class SupabaseServicioAutenticacion implements IServicioAutenticacion {
         try {
             int estado = respuesta.statusCode();
 
-            if (estado == 200) {
+            if (estado == HTTP_OK) {
                 JsonNode raiz = mapeadorJson.readTree(respuesta.body());
                 String token = raiz.path("access_token").asText(null);
                 String idUsuario = raiz.path("user").path("id").asText(null);
@@ -233,12 +240,12 @@ public class SupabaseServicioAutenticacion implements IServicioAutenticacion {
                 return new SesionUsuario(token, idUsuario, segundosValidez);
             }
 
-            if (estado == 429) {
+            if (estado == HTTP_DEMASIADAS_PETICIONES) {
                 throw new InicioSesionFallidoException(
                         "Demasiados intentos. Espera unos minutos e inténtalo de nuevo.");
             }
 
-            if (estado >= 500) {
+            if (estado >= HTTP_ERROR_DEL_SERVIDOR) {
                 LOG.warn("Supabase respondio {} al iniciar sesion", estado);
                 throw new InicioSesionFallidoException(
                         "No se pudo iniciar sesión. Intenta más tarde.");
@@ -260,7 +267,7 @@ public class SupabaseServicioAutenticacion implements IServicioAutenticacion {
         try {
             JsonNode raiz = mapeadorJson.readTree(respuesta.body());
 
-            boolean exito = respuesta.statusCode() == 200 || respuesta.statusCode() == 201;
+            boolean exito = respuesta.statusCode() == HTTP_OK || respuesta.statusCode() == HTTP_CREADO;
 
             if (exito) {
                 JsonNode nodoId = raiz.has("id") ? raiz.get("id")

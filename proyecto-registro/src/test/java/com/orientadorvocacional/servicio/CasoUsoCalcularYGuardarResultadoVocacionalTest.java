@@ -22,17 +22,17 @@ import static org.mockito.Mockito.*;
  * define aqui mismo, a mano, con valores conocidos, para poder
  * verificar que el calculo matematico es correcto.
  */
-class CasoUsoCalcularYGuardarResultadoTestTest {
+class CasoUsoCalcularYGuardarResultadoVocacionalTest {
 
     private IRepositorioPreguntas repositorioPreguntasMock;
     private IRepositorioResultadoTest repositorioResultadoMock;
-    private CasoUsoCalcularYGuardarResultadoTest casoUso;
+    private CasoUsoCalcularYGuardarResultadoVocacional casoUso;
 
     @BeforeEach
     void configurar() throws Exception {
         repositorioPreguntasMock = mock(IRepositorioPreguntas.class);
         repositorioResultadoMock = mock(IRepositorioResultadoTest.class);
-        casoUso = new CasoUsoCalcularYGuardarResultadoTest(repositorioPreguntasMock, repositorioResultadoMock);
+        casoUso = new CasoUsoCalcularYGuardarResultadoVocacional(repositorioPreguntasMock, repositorioResultadoMock);
 
         // Cuestionario de prueba: 2 preguntas, cada una con una
         // opcion de "ingenieria" (peso 3) y una de "salud" (peso 3).

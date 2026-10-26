@@ -20,6 +20,8 @@ public class JpaTemasDificilesRepositorio implements ITemasDificilesRepositorio 
     private final SemestreCarreraJpaRepository semestreJpa;
     private final MateriaCarreraJpaRepository materiaJpa;
     private final TemaDificilJpaRepository temaJpa;
+    private final CacheTemporal<Integer, Map<Integer, Map<String, List<String>>>> cache =
+            new CacheTemporal<>(5 * 60 * 1000L, 500);
 
     public JpaTemasDificilesRepositorio(SemestreCarreraJpaRepository semestreJpa,
                                         MateriaCarreraJpaRepository materiaJpa,
@@ -33,6 +35,15 @@ public class JpaTemasDificilesRepositorio implements ITemasDificilesRepositorio 
     public Map<Integer, Map<String, List<String>>> obtenerPorCarrera(int carreraId)
             throws ConsultaTemasDificilesFallidaException {
         try {
+            return cache.obtener(carreraId, () -> consultarTemas(carreraId));
+
+        } catch (Exception excepcion) {
+            throw new ConsultaTemasDificilesFallidaException(
+                    "No se pudieron consultar los temas más difíciles de la carrera.", excepcion);
+        }
+    }
+
+    private Map<Integer, Map<String, List<String>>> consultarTemas(int carreraId) {
             // 1. Los semestres de la carrera, para saber el número de cada uno.
             Map<Integer, Integer> numeroPorIdSemestre = new HashMap<>();
             for (SemestreCarreraEntity semestre : semestreJpa.findByCarreraIdOrderByNumeroAsc(carreraId)) {
@@ -64,10 +75,5 @@ public class JpaTemasDificilesRepositorio implements ITemasDificilesRepositorio 
                         .add(tema.getTema());
             }
             return resultado;
-
-        } catch (Exception excepcion) {
-            throw new ConsultaTemasDificilesFallidaException(
-                    "No se pudieron consultar los temas más difíciles de la carrera.", excepcion);
-        }
     }
 }

@@ -13,6 +13,7 @@ import com.orientadorvocacional.servicio.CasoUsoConsultarPago;
 import com.orientadorvocacional.servicio.CasoUsoIniciarPago;
 import com.orientadorvocacional.servicio.CasoUsoObtenerOfertaAcceso;
 import com.orientadorvocacional.servicio.CasoUsoProcesarPago;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -96,7 +97,7 @@ public class PagoController {
         try {
             return ResponseEntity.ok(PagoDTO.desde(casoUsoIniciar.ejecutar(usuarioId)));
         } catch (AccesoYaOtorgadoException excepcion) {
-            return ResponseEntity.status(409).body(excepcion.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(excepcion.getMessage());
         } catch (OperacionPagoFallidaException excepcion) {
             return ResponseEntity.internalServerError().body(excepcion.getMessage());
         }
@@ -127,9 +128,9 @@ public class PagoController {
             return ResponseEntity.ok(PagoDTO.desde(casoUsoProcesar.ejecutar(usuarioId, referencia, tarjeta)));
 
         } catch (PagoNoEncontradoException excepcion) {
-            return ResponseEntity.status(404).body(excepcion.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(excepcion.getMessage());
         } catch (PagoYaProcesadoException excepcion) {
-            return ResponseEntity.status(409).body(excepcion.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(excepcion.getMessage());
         } catch (OperacionPagoFallidaException excepcion) {
             return ResponseEntity.internalServerError().body(excepcion.getMessage());
         }
@@ -145,9 +146,9 @@ public class PagoController {
         try {
             return ResponseEntity.ok(PagoDTO.desde(casoUsoCancelar.ejecutar(usuarioId, referencia)));
         } catch (PagoNoEncontradoException excepcion) {
-            return ResponseEntity.status(404).body(excepcion.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(excepcion.getMessage());
         } catch (PagoYaProcesadoException excepcion) {
-            return ResponseEntity.status(409).body(excepcion.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(excepcion.getMessage());
         } catch (OperacionPagoFallidaException excepcion) {
             return ResponseEntity.internalServerError().body(excepcion.getMessage());
         }
@@ -163,7 +164,7 @@ public class PagoController {
         try {
             return ResponseEntity.ok(PagoDTO.desde(casoUsoConsultar.ejecutar(usuarioId, referencia)));
         } catch (PagoNoEncontradoException excepcion) {
-            return ResponseEntity.status(404).body(excepcion.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(excepcion.getMessage());
         } catch (OperacionPagoFallidaException excepcion) {
             return ResponseEntity.internalServerError().body(excepcion.getMessage());
         }

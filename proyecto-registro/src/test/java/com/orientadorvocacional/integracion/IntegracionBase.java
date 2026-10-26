@@ -44,7 +44,7 @@ import com.orientadorvocacional.repositorio.ITemasDificilesRepositorio;
 import com.orientadorvocacional.repositorio.IUniversidadRepositorio;
 import com.orientadorvocacional.seguridad.InterceptorAccesoCompleto;
 import com.orientadorvocacional.seguridad.InterceptorAutenticacion;
-import com.orientadorvocacional.servicio.CasoUsoCalcularYGuardarResultadoTest;
+import com.orientadorvocacional.servicio.CasoUsoCalcularYGuardarResultadoVocacional;
 import com.orientadorvocacional.servicio.CasoUsoCancelarPago;
 import com.orientadorvocacional.servicio.CasoUsoConsultarPago;
 import com.orientadorvocacional.servicio.CasoUsoIniciarPago;
@@ -152,7 +152,7 @@ abstract class IntegracionBase {
                 new CasoUsoIniciarSesion(autenticacion));
         var test = new TestController(
                 new CasoUsoObtenerCuestionario(catalogo),
-                new CasoUsoCalcularYGuardarResultadoTest(catalogo, resultados));
+                new CasoUsoCalcularYGuardarResultadoVocacional(catalogo, resultados));
         var perfilController = new PerfilController(
                 casoPerfil, new CasoUsoObtenerHistorialTest(resultados, casoPerfil));
         var carreras = new CarreraController(

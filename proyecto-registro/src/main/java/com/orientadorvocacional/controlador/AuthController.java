@@ -4,6 +4,7 @@ import com.orientadorvocacional.excepciones.*;
 import com.orientadorvocacional.modelo.SesionUsuario;
 import com.orientadorvocacional.servicio.CasoUsoIniciarSesion;
 import com.orientadorvocacional.servicio.CasoUsoRegistrarUsuario;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,7 +45,7 @@ public class AuthController {
         } catch (CorreoInvalidoException | ContrasenaInvalidaException excepcion) {
             return ResponseEntity.badRequest().body(excepcion.getMessage());
         } catch (CorreoYaRegistradoException excepcion) {
-            return ResponseEntity.status(409).body(excepcion.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(excepcion.getMessage());
         } catch (RegistroFallidoException excepcion) {
             return ResponseEntity.internalServerError().body(excepcion.getMessage());
         }
@@ -57,7 +58,7 @@ public class AuthController {
             return ResponseEntity.ok(sesion);
 
         } catch (CredencialesInvalidasException excepcion) {
-            return ResponseEntity.status(401).body(excepcion.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(excepcion.getMessage());
         } catch (InicioSesionFallidoException excepcion) {
             return ResponseEntity.internalServerError().body(excepcion.getMessage());
         }
