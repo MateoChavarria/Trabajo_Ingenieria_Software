@@ -1,5 +1,6 @@
 package com.orientadorvocacional.controlador;
 
+import com.orientadorvocacional.excepciones.AdminException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -34,6 +35,15 @@ public class ManejadorGlobalErrores {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> datosInvalidos(IllegalArgumentException excepcion) {
         return ResponseEntity.badRequest().body(excepcion.getMessage());
+    }
+
+    /** Errores del panel de administracion: llevan su propio codigo HTTP (404, 409, 500...). */
+    @ExceptionHandler(AdminException.class)
+    public ResponseEntity<String> errorDePanelAdmin(AdminException excepcion) {
+        if (excepcion.getEstado() >= HttpStatus.INTERNAL_SERVER_ERROR.value()) {
+            LOG.error("Falla en el panel de administracion", excepcion);
+        }
+        return ResponseEntity.status(excepcion.getEstado()).body(excepcion.getMessage());
     }
 
     @ExceptionHandler(Exception.class)

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Orientador Vocacional UPB</title>
+    <title>Orientador Vocacional</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
@@ -15,12 +15,34 @@
     <h1>Descubre qué carrera de la UPB va contigo</h1>
     <p>Responde un test vocacional corto, mira cómo sería vivir cada carrera semestre a semestre, y compara tus resultados antes de decidir.</p>
     <div class="acts">
-        <a class="btn sun" href="registro.html">Hacer el test gratis</a>
+        <a class="btn sun" id="btnPrincipal" href="registro.html">Crear mi cuenta</a>
         <a class="btn outline" href="explorar.html">Explorar las carreras</a>
     </div>
+
+    <div class="grid-cards" style="margin-top:44px">
+        <div class="card">
+            <span class="badge-area">Gratis</span>
+            <h3>Explora sin pagar</h3>
+            <ul class="lista-incluye gratis">
+                <li>Todas las carreras y sus planes de estudio</li>
+                <li>Las universidades</li>
+            </ul>
+        </div>
+        <div class="card">
+            <span class="badge-bloqueado">🔒 Acceso completo · $20.000 COP</span>
+            <h3>Descubre tu carrera</h3>
+            <ul class="lista-incluye con-candado">
+                <li>Test vocacional y resumen de tu perfil</li>
+                <li>Carreras recomendadas para ti</li>
+                <li>Simulador de carrera semestre por semestre</li>
+            </ul>
+            <p class="motivo">Pago único, sin fecha de vencimiento.</p>
+        </div>
+    </div>
 </main>
-<footer class="pie">Orientador Vocacional UPB · Proyecto académico</footer>
+<footer class="pie">Orientador Vocacional</footer>
 <script src="js/utilidadesDom.js"></script>
 <script src="js/sesion.js"></script>
+<script src="js/index.js"></script>
 </body>
 </html>

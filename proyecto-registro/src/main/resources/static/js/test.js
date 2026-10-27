@@ -19,7 +19,7 @@ const barraProgreso = new BarraProgreso(elementoBarraProgreso, elementoTextoProg
 
 async function cargarCuestionario() {
     try {
-        const respuesta = await fetch("/api/test/preguntas");
+        const respuesta = await fetchAutenticado("/api/test/preguntas");
 
         if (!respuesta.ok) {
             elementoPregunta.textContent = "No se pudo cargar el test. Intenta de nuevo más tarde.";

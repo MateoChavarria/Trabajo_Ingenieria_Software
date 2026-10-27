@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Simulador de carrera - Orientador Vocacional</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/estilo.css">
+</head>
+<body data-requiere-sesion data-requiere-acceso>
+<header class="nav" id="nav"></header>
+<main class="wrap" style="max-width:760px">
+    <a href="#" id="linkVolver" style="display:inline-block;margin:20px 0;font-weight:700;text-decoration:none">&larr; Volver al detalle de la carrera</a>
+
+    <h1 id="nombreCarrera">Cargando simulación...</h1>
+    <div id="mensajeError"></div>
+
+    <section id="simulacion" hidden>
+        <div id="avisoReferencial" class="alerta aviso" style="margin-top:14px"></div>
+
+        <div class="bar" style="margin-top:20px">
+            <div><b id="textoProgreso"></b></div>
+            <span><i id="barraProgreso" style="width:0%"></i></span>
+        </div>
+
+        <ol id="lineaTiempo" class="linea-tiempo" aria-label="Semestres de la carrera"></ol>
+
+        <div id="tarjetaSemestre" class="card" aria-live="polite"></div>
+
+        <div class="controles-simulador">
+            <button id="btnAnterior" class="btn outline" type="button">Anterior</button>
+            <button id="btnSiguiente" class="btn" type="button">Siguiente</button>
+        </div>
+
+        <section id="resumenFinal" class="card resumen-final" hidden>
+            <h2>Resumen general de la carrera</h2>
+            <dl id="datosResumen" class="datos-resumen"></dl>
+            <p id="avisoResumen" class="motivo"></p>
+        </section>
+    </section>
+</main>
+<footer class="pie">Orientador Vocacional</footer>
+<script src="js/utilidadesDom.js"></script>
+<script src="js/sesion.js"></script>
+<script src="js/barraProgreso.js"></script>
+<script src="js/pensumVista.js"></script>
+<script src="js/simulador.js"></script>
+</body>
+</html>

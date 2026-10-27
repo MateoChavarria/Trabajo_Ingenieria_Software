@@ -2,17 +2,17 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Carreras recomendadas - Orientador Vocacional UPB</title>
+    <title>Carreras recomendadas - Orientador Vocacional</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/estilo.css">
 </head>
-<body data-requiere-sesion>
+<body data-requiere-sesion data-requiere-acceso>
 <header class="nav" id="nav"></header>
 <main class="wrap">
     <h1 style="margin:28px 0 6px">Tus carreras recomendadas</h1>
-    <p style="color:#5b6190;margin-bottom:20px">Según tus respuestas en el test vocacional.</p>
+    <p id="textoFechaCarreras" style="color:var(--suave);margin-bottom:20px">Según tus respuestas en el test vocacional.</p>
 
     <div id="avisoAfinidadBaja" class="alerta aviso" style="display:none">
         No encontramos una afinidad muy fuerte con ninguna área, pero aquí tienes las carreras que más se acercan a tu perfil.
@@ -20,7 +20,7 @@
 
     <div id="listaCarreras" class="grid-cards"></div>
 </main>
-<footer class="pie">Orientador Vocacional UPB · Proyecto académico</footer>
+<footer class="pie">Orientador Vocacional</footer>
 <script src="js/utilidadesDom.js"></script>
 <script src="js/sesion.js"></script>
 <script src="js/carreras.js"></script>

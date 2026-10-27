@@ -13,7 +13,11 @@ import java.util.List;
 @Repository
 public class JpaCarreraRepositorio implements ICarreraRepositorio {
 
+    private static final long CINCO_MINUTOS_MS = 5 * 60 * 1000L;
+
     private final CarreraJpaRepository repositorioJpa;
+    private final CacheTemporal<String, List<Carrera>> cacheListado = new CacheTemporal<>(CINCO_MINUTOS_MS, 1);
+    private final CacheTemporal<Integer, Carrera> cachePorId = new CacheTemporal<>(CINCO_MINUTOS_MS, 500);
 
     public JpaCarreraRepositorio(CarreraJpaRepository repositorioJpa) {
         this.repositorioJpa = repositorioJpa;
@@ -22,11 +26,13 @@ public class JpaCarreraRepositorio implements ICarreraRepositorio {
     @Override
     public List<Carrera> obtenerTodas() throws ConsultaCarrerasFallidaException {
         try {
-            List<Carrera> carreras = new ArrayList<>();
-            for (CarreraEntity entidad : repositorioJpa.findAll()) {
-                carreras.add(convertir(entidad));
-            }
-            return carreras;
+            return cacheListado.obtener("todas", () -> {
+                List<Carrera> carreras = new ArrayList<>();
+                for (CarreraEntity entidad : repositorioJpa.findAll()) {
+                    carreras.add(convertir(entidad));
+                }
+                return carreras;
+            });
 
         } catch (Exception excepcion) {
             throw new ConsultaCarrerasFallidaException(
@@ -37,10 +43,16 @@ public class JpaCarreraRepositorio implements ICarreraRepositorio {
     @Override
     public Carrera obtenerPorId(int id) throws CarreraNoEncontradaException, ConsultaCarrerasFallidaException {
         try {
+            Carrera guardada = cachePorId.consultar(id);
+            if (guardada != null) {
+                return guardada;
+            }
             CarreraEntity entidad = repositorioJpa.findById(id)
                     .orElseThrow(() -> new CarreraNoEncontradaException(
                             "No existe una carrera con id " + id + "."));
-            return convertir(entidad);
+            Carrera carrera = convertir(entidad);
+            cachePorId.guardar(id, carrera);
+            return carrera;
 
         } catch (CarreraNoEncontradaException excepcion) {
             throw excepcion;

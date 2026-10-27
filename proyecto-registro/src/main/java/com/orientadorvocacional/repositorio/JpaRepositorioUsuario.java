@@ -34,7 +34,8 @@ public class JpaRepositorioUsuario implements IRepositorioUsuario {
                     java.util.UUID.fromString(id),
                     usuario.getCorreo(),
                     usuario.getFechaRegistro(),
-                    usuario.getEstadoCuenta().aTextoBaseDeDatos()
+                    usuario.getEstadoCuenta().aTextoBaseDeDatos(),
+                    false   // todo usuario nuevo empieza con acceso gratuito (Sprint 10)
             );
             repositorioJpa.save(entidad);
 

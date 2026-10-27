@@ -14,7 +14,11 @@ import java.util.List;
 @Repository
 public class JpaUniversidadRepositorio implements IUniversidadRepositorio {
 
+    private static final long CINCO_MINUTOS_MS = 5 * 60 * 1000L;
+
     private final UniversidadJpaRepository universidadJpa;
+    private final CacheTemporal<String, List<Universidad>> cacheListado = new CacheTemporal<>(CINCO_MINUTOS_MS, 1);
+    private final CacheTemporal<Integer, Boolean> cacheInfoCompleta = new CacheTemporal<>(CINCO_MINUTOS_MS, 500);
     private final CarreraJpaRepository carreraJpa;
 
     public JpaUniversidadRepositorio(UniversidadJpaRepository universidadJpa,
@@ -26,11 +30,13 @@ public class JpaUniversidadRepositorio implements IUniversidadRepositorio {
     @Override
     public List<Universidad> obtenerTodas() throws ConsultaUniversidadesFallidaException {
         try {
-            List<Universidad> universidades = new ArrayList<>();
-            for (UniversidadEntity entidad : universidadJpa.findAllByOrderByNombreAsc()) {
-                universidades.add(convertir(entidad));
-            }
-            return universidades;
+            return cacheListado.obtener("todas", () -> {
+                List<Universidad> universidades = new ArrayList<>();
+                for (UniversidadEntity entidad : universidadJpa.findAllByOrderByNombreAsc()) {
+                    universidades.add(convertir(entidad));
+                }
+                return universidades;
+            });
 
         } catch (Exception excepcion) {
             throw new ConsultaUniversidadesFallidaException(
@@ -42,13 +48,15 @@ public class JpaUniversidadRepositorio implements IUniversidadRepositorio {
     public boolean carreraPerteneceAUniversidadConInformacionCompleta(int carreraId)
             throws ConsultaUniversidadesFallidaException {
         try {
-            CarreraEntity carrera = carreraJpa.findById(carreraId).orElse(null);
-            if (carrera == null || carrera.getUniversidadId() == null) {
-                return false;
-            }
-            return universidadJpa.findById(carrera.getUniversidadId())
-                    .map(UniversidadEntity::isTieneInformacionCompleta)
-                    .orElse(false);
+            return cacheInfoCompleta.obtener(carreraId, () -> {
+                CarreraEntity carrera = carreraJpa.findById(carreraId).orElse(null);
+                if (carrera == null || carrera.getUniversidadId() == null) {
+                    return false;
+                }
+                return universidadJpa.findById(carrera.getUniversidadId())
+                        .map(UniversidadEntity::isTieneInformacionCompleta)
+                        .orElse(false);
+            });
 
         } catch (Exception excepcion) {
             throw new ConsultaUniversidadesFallidaException(

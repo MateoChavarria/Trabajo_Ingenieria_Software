@@ -34,12 +34,12 @@ import java.util.Set;
  * de esa area — no hace falta un calculo distinto.
  */
 @Service
-public class CasoUsoCalcularYGuardarResultadoTest {
+public class CasoUsoCalcularYGuardarResultadoVocacional {
 
     private final IRepositorioPreguntas repositorioPreguntas;
     private final IRepositorioResultadoTest repositorioResultadoTest;
 
-    public CasoUsoCalcularYGuardarResultadoTest(IRepositorioPreguntas repositorioPreguntas,
+    public CasoUsoCalcularYGuardarResultadoVocacional(IRepositorioPreguntas repositorioPreguntas,
                                                  IRepositorioResultadoTest repositorioResultadoTest) {
         this.repositorioPreguntas = repositorioPreguntas;
         this.repositorioResultadoTest = repositorioResultadoTest;
@@ -50,6 +50,11 @@ public class CasoUsoCalcularYGuardarResultadoTest {
 
         var preguntas = repositorioPreguntas.obtenerCuestionarioCompleto();
 
+        // El servidor no confia en que el navegador envie todo: si falta
+        // alguna pregunta (o una opcion no pertenece a su pregunta), se
+        // rechaza antes de calcular y de guardar nada.
+        validarRespuestasCompletas(preguntas, respuestasSeleccionadas);
+
         Map<String, Integer> puntajeObtenidoPorArea = calcularPuntajeObtenido(preguntas, respuestasSeleccionadas);
         Map<String, Integer> puntajeMaximoPorArea = calcularPuntajeMaximoPosible(preguntas);
         Map<String, Integer> afinidadPorArea = normalizarComoPocentaje(puntajeObtenidoPorArea, puntajeMaximoPorArea);
@@ -58,6 +63,30 @@ public class CasoUsoCalcularYGuardarResultadoTest {
         repositorioResultadoTest.guardar(resultado);
 
         return afinidadPorArea;
+    }
+
+    /**
+     * Regla de la Historia 3: el cuestionario se envia completo. Cada
+     * pregunta debe tener una respuesta y esa respuesta debe ser una de
+     * las opciones de la misma pregunta. Si no, IllegalArgumentException
+     * (el manejador global la convierte en HTTP 400).
+     */
+    private void validarRespuestasCompletas(Iterable<Pregunta> preguntas,
+                                            Map<Integer, Integer> respuestasSeleccionadas) {
+        if (respuestasSeleccionadas == null) {
+            throw new IllegalArgumentException("Debes responder todas las preguntas del cuestionario.");
+        }
+        for (Pregunta pregunta : preguntas) {
+            Integer idOpcionElegida = respuestasSeleccionadas.get(pregunta.getId());
+            if (idOpcionElegida == null) {
+                throw new IllegalArgumentException("Debes responder todas las preguntas del cuestionario.");
+            }
+            boolean opcionPertenece = pregunta.getOpciones().stream()
+                    .anyMatch(opcion -> opcion.getId() == idOpcionElegida);
+            if (!opcionPertenece) {
+                throw new IllegalArgumentException("Una de las respuestas no corresponde a su pregunta.");
+            }
+        }
     }
 
     /**

@@ -10,6 +10,32 @@ function crearElemento(etiqueta, clase, texto) {
     return elemento;
 }
 
+/** Nombres legibles de las areas (los mismos del backend). Los codigos vienen con guion bajo, por ejemplo "ciencias_sociales". */
+const NOMBRES_AREAS = {
+    ingenieria: "Ingenierías",
+    administracion: "Economía, Administración y Negocios",
+    "diseño": "Arquitectura y Diseño",
+    ciencias_sociales: "Ciencias Sociales",
+    educacion: "Educación y Pedagogía",
+    humanidades: "Teología, Filosofía y Humanidades",
+    derecho: "Derecho y Ciencias Políticas",
+    salud: "Ciencias de la Salud"
+};
+
+/** Convierte el codigo de un area en texto para mostrar. Si no la conoce, quita los guiones bajos. */
+function nombreArea(codigo) {
+    if (Object.prototype.hasOwnProperty.call(NOMBRES_AREAS, codigo)) {
+        return NOMBRES_AREAS[codigo];
+    }
+    const texto = String(codigo).replace(/_/g, " ");
+    return texto.charAt(0).toUpperCase() + texto.slice(1);
+}
+
+/** 20000 -> "$20.000" (pesos colombianos). */
+function formatoPesos(monto) {
+    return "$" + Number(monto).toLocaleString("es-CO");
+}
+
 function porcentajeSeguro(valor) {
     const numero = Number(valor);
     if (!Number.isFinite(numero)) return 0;
@@ -38,6 +64,10 @@ function mostrarAlerta(contenedor, tipo, texto) {
 
 function enlaceDetalleCarrera(idCarrera) {
     return "carrera-detalle.html?id=" + encodeURIComponent(String(idCarrera));
+}
+
+function enlaceSimulador(idCarrera) {
+    return "simulador.html?id=" + encodeURIComponent(String(idCarrera));
 }
 
 function leerJsonLocal(clave) {

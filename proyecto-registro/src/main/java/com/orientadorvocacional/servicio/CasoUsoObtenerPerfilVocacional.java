@@ -11,7 +11,7 @@ import java.util.Map;
 
 /**
  * A partir de la afinidad por area ya calculada en la Historia 3
- * (CasoUsoCalcularYGuardarResultadoTest), deriva el perfil del
+ * (CasoUsoCalcularYGuardarResultadoVocacional), deriva el perfil del
  * usuario: sus 3 areas dominantes, cada una con su texto
  * interpretativo.
  *

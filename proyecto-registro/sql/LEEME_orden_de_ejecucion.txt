@@ -1,0 +1,27 @@
+ORDEN DE EJECUCION DE LOS SCRIPTS SQL (Supabase -> SQL Editor)
+
+Base que ya tienes funcionando: solo falta ejecutar el 18 (trigger). Nada mas hace falta repetir. Solo revisa que
+tengas TODOS estos archivos en la carpeta proyecto-registro/sql del repositorio.
+
+Para montar una base nueva, en este orden:
+ 1. base_00_esquema_usuarios_preguntas_resultados.sql   (tablas de los primeros sprints)
+ 2. carreras.sql                                        (37 carreras)
+ 3. datos_prueba_preguntas.sql                          (53 preguntas, 8 areas)
+ 4. seguridad_rls.sql                                   (RLS + correo unico)
+ 5. sprint7_01_esquema.sql
+ 6. sprint7_02_universidades.sql
+ 7. sprint7_03_semestres.sql
+ 8. sprint7_04_materias_parte1.sql
+ 9. sprint7_04_materias_parte2.sql
+10. sprint9_01_esquema.sql
+11. sprint9_02_temas_parte1.sql
+12. sprint9_02_temas_parte2.sql
+13. sprint9_02_temas_parte3.sql
+14. sprint9_02_temas_parte4.sql      -> temas_dificiles_materia debe tener 4216 filas
+15. sprint9_03_opcional_borrar_temas_electivas.sql  (OPCIONAL, deja 3762 filas)
+16. sprint10_01_pagos.sql            (columna acceso_completo + tabla pagos)
+17. sprint10_02_utiles_demo.sql      (utilidades para la demo: dar o quitar acceso)
+18. sprint11_01_trigger_usuarios.sql (cada usuario de Authentication tiene su fila en usuarios;
+                                     arregla "No se pudo iniciar el pago.")
+
+Los scripts grandes (materias y temas) pueden tardar; ejecutalos uno por uno.
